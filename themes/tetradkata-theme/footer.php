@@ -32,7 +32,6 @@
                     <?php if (class_exists('WooCommerce')) : ?>
                         <li><a href="<?php echo wc_get_cart_url(); ?>">Количка</a></li>
                         <li><a href="<?php echo wc_get_checkout_url(); ?>">Плащане</a></li>
-                        <li><a href="<?php echo wc_get_account_url(); ?>">Моят профил</a></li>
                     <?php endif; ?>
                 </ul>
             </div>
