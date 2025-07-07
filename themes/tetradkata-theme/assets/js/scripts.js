@@ -178,7 +178,8 @@
      * Initialize FAQ accordion
      */
     function initializeFAQ() {
-        $('.faq-question').on('click', function() {
+        $(document).on('click', '.faq-question', function(e) {
+            e.preventDefault();
             const $faqItem = $(this).parent();
             const $faqAnswer = $faqItem.find('.faq-answer');
             const $faqIcon = $(this).find('.faq-icon');
@@ -661,13 +662,7 @@
 // Additional CSS animations and styles
 const additionalStyles = `
     <style>
-    /* Animation classes */
-    .animate-in {
-        opacity: 1;
-        transform: translateY(0);
-        transition: opacity 0.6s ease, transform 0.6s ease;
-    }
-    
+    /* Animation classes */    
     .product-card,
     .step,
     .faq-item {
@@ -676,6 +671,12 @@ const additionalStyles = `
         transition: opacity 0.6s ease, transform 0.6s ease;
     }
     
+    .animate-in {
+        opacity: 1;
+        transform: translateY(0);
+        transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
     /* Button animations */
     .btn-success {
         background: #22c55e !important;

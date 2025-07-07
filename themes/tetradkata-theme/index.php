@@ -236,7 +236,7 @@ get_header(); ?>
         
         <div class="faq-container">
             <div class="faq-item">
-                <button class="faq-question">
+                <button type="button" class="faq-question">
                     Как мога да направя поръчка?
                     <span class="faq-icon">+</span>
                 </button>
@@ -246,7 +246,7 @@ get_header(); ?>
             </div>
             
             <div class="faq-item">
-                <button class="faq-question">
+                <button type="button" class="faq-question">
                     Какви са възможностите за доставка?
                     <span class="faq-icon">+</span>
                 </button>
@@ -256,7 +256,7 @@ get_header(); ?>
             </div>
             
             <div class="faq-item">
-                <button class="faq-question">
+                <button type="button" class="faq-question">
                     Каква е цената на доставката?
                     <span class="faq-icon">+</span>
                 </button>
@@ -266,7 +266,7 @@ get_header(); ?>
             </div>
             
             <div class="faq-item">
-                <button class="faq-question">
+                <button type="button" class="faq-question">
                     Мога ли да върна продукт?
                     <span class="faq-icon">+</span>
                 </button>
@@ -276,7 +276,7 @@ get_header(); ?>
             </div>
             
             <div class="faq-item">
-                <button class="faq-question">
+                <button type="button" class="faq-question">
                     Предлагате ли опаковка за подарък?
                     <span class="faq-icon">+</span>
                 </button>
@@ -286,7 +286,7 @@ get_header(); ?>
             </div>
             
             <div class="faq-item">
-                <button class="faq-question">
+                <button type="button" class="faq-question">
                     Как мога да се свържа с вас?
                     <span class="faq-icon">+</span>
                 </button>
