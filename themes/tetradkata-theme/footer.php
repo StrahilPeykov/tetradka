@@ -151,26 +151,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // FAQ accordion
-    document.querySelectorAll('.faq-question').forEach(button => {
-        button.addEventListener('click', function() {
-            const faqItem = this.parentElement;
-            const isActive = faqItem.classList.contains('active');
-            
-            // Close all FAQ items
-            document.querySelectorAll('.faq-item').forEach(item => {
-                item.classList.remove('active');
-                item.querySelector('.faq-icon').textContent = '+';
-            });
-            
-            // Open clicked item if it wasn't active
-            if (!isActive) {
-                faqItem.classList.add('active');
-                this.querySelector('.faq-icon').textContent = '−';
-            }
-        });
-    });
-
     // Cookie banner functionality
     const cookieBanner = document.getElementById('cookie-banner');
     const acceptCookies = document.getElementById('accept-cookies');
