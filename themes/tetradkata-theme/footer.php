@@ -40,12 +40,10 @@
             <div class="footer-section">
                 <h3>Обслужване</h3>
                 <ul class="footer-menu">
-                    <li><a href="#delivery">Доставка</a></li>
-                    <li><a href="#returns">Връщания</a></li>
-                    <li><a href="#payment">Плащане</a></li>
-                    <li><a href="#size-guide">Ръководство</a></li>
-                    <li><a href="#terms">Условия</a></li>
-                    <li><a href="#privacy">Поверителност</a></li>
+                    <li><a href="/dostavka">Доставка</a></li>
+                    <li><a href="/vrashtania">Връщания</a></li>
+                    <li><a href="/usloviya">Условия за ползване</a></li>
+                    <li><a href="/poveritelnost">Политика за поверителност</a></li>
                 </ul>
             </div>
 
@@ -82,11 +80,7 @@
                 </div>
                 
                 <div class="payment-methods">
-                    <span>Приемаме:</span>
-                    <img src="<?php echo get_template_directory_uri(); ?>/assets/images/payment-visa.png" alt="Visa" class="payment-icon">
-                    <img src="<?php echo get_template_directory_uri(); ?>/assets/images/payment-mastercard.png" alt="Mastercard" class="payment-icon">
-                    <img src="<?php echo get_template_directory_uri(); ?>/assets/images/payment-viva.png" alt="Viva Wallet" class="payment-icon">
-                    <span class="payment-cod">Наложен платеж</span>
+                    <span>Приемаме карти и наложен платеж</span>
                 </div>
             </div>
         </div>
@@ -448,10 +442,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
 .footer-bottom-content {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
-    flex-wrap: wrap;
-    gap: 20px;
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
 }
 
 .copyright p {
@@ -461,25 +456,18 @@ document.addEventListener('DOMContentLoaded', function() {
 }
 
 .payment-methods {
-    display: flex;
-    align-items: center;
-    gap: 10px;
     font-size: 14px;
+    opacity: 0.9;
+    padding: 8px 20px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 20px;
 }
 
-.payment-icon {
-    height: 25px;
-    width: auto;
-    opacity: 0.8;
-}
-
-.payment-cod {
-    background: var(--warm-beige);
-    color: var(--charcoal);
-    padding: 5px 10px;
-    border-radius: 15px;
-    font-size: 12px;
-    font-weight: 600;
+@media (min-width: 769px) {
+    .footer-bottom-content {
+        flex-direction: row;
+        justify-content: space-between;
+    }
 }
 
 /* Cookie Banner */
@@ -583,6 +571,7 @@ document.addEventListener('DOMContentLoaded', function() {
     .footer-bottom-content {
         flex-direction: column;
         text-align: center;
+        gap: 15px;
     }
     
     .cookie-content {
@@ -591,8 +580,12 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     .payment-methods {
-        justify-content: center;
-        flex-wrap: wrap;
+        order: -1;
+        margin-bottom: 10px;
+    }
+    
+    .copyright {
+        font-size: 13px;
     }
     
     .notification {
