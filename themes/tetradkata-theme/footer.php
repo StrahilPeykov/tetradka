@@ -313,10 +313,10 @@ function hideNotification(notification) {
     }, 300);
 }
 
-// Initialize Swiper when available
-document.addEventListener('DOMContentLoaded', function() {
-    if (typeof Swiper !== 'undefined') {
-        new Swiper('.tetradkata-swiper', {
+// Function to initialize Swiper
+function initSwiper() {
+    if (typeof Swiper !== 'undefined' && document.querySelector('.tetradkata-swiper')) {
+        const swiper = new Swiper('.tetradkata-swiper', {
             slidesPerView: 1,
             spaceBetween: 30,
             loop: true,
@@ -336,7 +336,45 @@ document.addEventListener('DOMContentLoaded', function() {
             fadeEffect: {
                 crossFade: true
             },
+            on: {
+                init: function() {
+                    console.log('Swiper carousel initialized successfully');
+                }
+            }
         });
+        
+        return swiper;
+    }
+    return null;
+}
+
+// Initialize Swiper when available
+document.addEventListener('DOMContentLoaded', function() {
+    // Try to initialize immediately
+    let swiperInstance = initSwiper();
+    
+    // If Swiper isn't loaded yet, try again after scripts load
+    if (!swiperInstance) {
+        window.addEventListener('load', function() {
+            setTimeout(initSwiper, 100);
+        });
+    }
+    
+    // Additional fallback - retry every 500ms for up to 5 seconds
+    if (!swiperInstance) {
+        let attempts = 0;
+        const maxAttempts = 10;
+        const retryInterval = setInterval(function() {
+            attempts++;
+            swiperInstance = initSwiper();
+            
+            if (swiperInstance || attempts >= maxAttempts) {
+                clearInterval(retryInterval);
+                if (!swiperInstance) {
+                    console.warn('Swiper could not be initialized after multiple attempts');
+                }
+            }
+        }, 500);
     }
 });
 </script>

@@ -37,6 +37,7 @@
      * Initialize Swiper Carousel
      */
     function initializeSwiper() {
+        // Wait for Swiper to be available
         if (typeof Swiper !== 'undefined') {
             const swiper = new Swiper('.tetradkata-swiper', {
                 // Basic settings
@@ -44,6 +45,7 @@
                 spaceBetween: 0,
                 loop: true,
                 grabCursor: true,
+                centeredSlides: true,
                 
                 // Autoplay
                 autoplay: {
@@ -84,7 +86,7 @@
                 // Callbacks
                 on: {
                     init: function() {
-                        console.log('Swiper initialized');
+                        console.log('Swiper initialized successfully');
                     },
                     slideChange: function() {
                         // Track slide changes for analytics
@@ -97,9 +99,14 @@
             
             // Pause autoplay on hover
             $('.tetradkata-swiper').hover(
-                function() { swiper.autoplay.stop(); },
-                function() { swiper.autoplay.start(); }
+                function() { if (swiper.autoplay) swiper.autoplay.stop(); },
+                function() { if (swiper.autoplay) swiper.autoplay.start(); }
             );
+            
+            return swiper;
+        } else {
+            // Retry after a short delay if Swiper isn't loaded yet
+            setTimeout(initializeSwiper, 500);
         }
     }
     
