@@ -5,7 +5,7 @@
         <div class="footer-content">
             <div class="footer-section">
                 <h3>Тетрадката</h3>
-                <p>Личният ви дневник за пътешествия, спомени и вдъхновение – събрани в една тетрадка.</p>
+                <p>Личният ви дневник за пътешествия, спомени и вдъхновение, събрани в една тетрадка.</p>
                 <div class="social-links">
                     <a href="#" class="social-link" aria-label="Facebook">
                         <span class="dashicons dashicons-facebook-alt"></span>
