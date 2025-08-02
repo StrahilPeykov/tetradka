@@ -8,6 +8,7 @@
     
     // DOM Ready
     $(document).ready(function() {
+        console.log('Tetradkata scripts loaded');
         initializeTheme();
     });
     
@@ -208,19 +209,32 @@
      * Initialize cart functionality
      */
     function initializeCartFunctionality() {
-        // Add to cart buttons
-        $(document).on('click', '.add-to-cart-btn', function(e) {
+        console.log('Initializing cart functionality');
+        
+        // Add to cart buttons - use event delegation
+        $(document).off('click.tetradkata', '.add-to-cart-btn').on('click.tetradkata', '.add-to-cart-btn', function(e) {
             e.preventDefault();
             
             const $button = $(this);
+            
+            // Prevent double clicks
+            if ($button.hasClass('processing')) {
+                return;
+            }
+            
             const productId = $button.data('product-id');
             const productName = $button.data('product-name');
             const quantity = $button.data('quantity') || 1;
-            const originalText = $button.text();
             
-            // Show loading state
-            $button.html('<span class="loading"></span> Добавя...')
-                   .prop('disabled', true);
+            if (!productId) {
+                console.error('No product ID found');
+                return;
+            }
+            
+            console.log('Add to cart clicked:', {productId, productName, quantity});
+            
+            // Set button to processing state
+            setButtonProcessing($button, true);
             
             // AJAX request
             $.ajax({
@@ -233,6 +247,8 @@
                     nonce: tetradkata_ajax.nonce
                 },
                 success: function(response) {
+                    console.log('Add to cart response:', response);
+                    
                     if (response.success) {
                         // Update cart count
                         updateCartCount(response.data.cart_count);
@@ -240,65 +256,107 @@
                         // Show success message
                         showNotification('Продуктът е добавен в количката!', 'success');
                         
-                        // Track successful add to cart
-                        trackEvent('add_to_cart', {
-                            item_id: productId,
-                            item_name: productName,
-                            quantity: quantity
-                        });
+                        // Set button to success state temporarily
+                        setButtonSuccess($button);
                         
-                        // Button success animation
-                        $button.addClass('btn-success')
-                               .text('✓ Добавено');
-                        
-                        setTimeout(function() {
-                            $button.removeClass('btn-success')
-                                   .text(originalText);
-                        }, 2000);
+                        // Track event if available
+                        if (typeof gtag !== 'undefined') {
+                            gtag('event', 'add_to_cart', {
+                                currency: 'BGN',
+                                value: parseFloat($button.data('product-price')) || 0,
+                                items: [{
+                                    item_id: productId,
+                                    item_name: productName,
+                                    quantity: quantity
+                                }]
+                            });
+                        }
                         
                     } else {
                         showNotification(response.data.message || 'Възникна грешка', 'error');
+                        setButtonProcessing($button, false);
                     }
                 },
-                error: function() {
+                error: function(xhr, status, error) {
+                    console.error('Add to cart error:', {xhr, status, error});
                     showNotification('Възникна грешка при добавяне на продукта', 'error');
-                },
-                complete: function() {
-                    $button.prop('disabled', false);
-                    if (!$button.hasClass('btn-success')) {
-                        $button.text(originalText);
-                    }
+                    setButtonProcessing($button, false);
                 }
             });
         });
         
-        // Quantity selectors
-        $(document).on('click', '.quantity-plus', function() {
-            const $input = $(this).siblings('.quantity-input');
-            const currentValue = parseInt($input.val()) || 1;
-            $input.val(currentValue + 1).trigger('change');
+        // Cart toggle - use event delegation
+        $(document).off('click.tetradkata', '#cart-toggle').on('click.tetradkata', '#cart-toggle', function(e) {
+            e.preventDefault();
+            console.log('Cart toggle clicked');
+            toggleCartModal();
         });
         
-        $(document).on('click', '.quantity-minus', function() {
-            const $input = $(this).siblings('.quantity-input');
-            const currentValue = parseInt($input.val()) || 1;
-            if (currentValue > 1) {
-                $input.val(currentValue - 1).trigger('change');
+        // Close cart modal - use event delegation  
+        $(document).off('click.tetradkata', '.close-cart, .cart-modal').on('click.tetradkata', '.close-cart, .cart-modal', function(e) {
+            if (e.target === this) {
+                console.log('Closing cart modal');
+                closeCartModal();
             }
         });
         
-        // Cart toggle
-        $('#cart-toggle').on('click', function(e) {
-            e.preventDefault();
-            toggleCartModal();
+        // Prevent modal content clicks from closing modal
+        $(document).off('click.tetradkata', '.cart-modal-content').on('click.tetradkata', '.cart-modal-content', function(e) {
+            e.stopPropagation();
         });
+        
+        // Remove cart item
+        $(document).off('click.tetradkata', '.remove-cart-item').on('click.tetradkata', '.remove-cart-item', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const cartItemKey = $(this).data('cart-item-key');
+            removeCartItem(cartItemKey);
+        });
+        
+        // ESC key to close modals
+        $(document).off('keydown.tetradkata').on('keydown.tetradkata', function(e) {
+            if (e.key === 'Escape') {
+                closeCartModal();
+            }
+        });
+    }
+    
+    /**
+     * Set button processing state
+     */
+    function setButtonProcessing($button, processing) {
+        if (processing) {
+            $button.addClass('processing').prop('disabled', true);
+            $button.find('.btn-text').hide();
+            $button.find('.btn-loading').show();
+        } else {
+            $button.removeClass('processing').prop('disabled', false);
+            $button.find('.btn-text').show();
+            $button.find('.btn-loading').hide();
+        }
+    }
+    
+    /**
+     * Set button success state
+     */
+    function setButtonSuccess($button) {
+        $button.removeClass('processing').addClass('success');
+        $button.find('.btn-text').text('✓ Добавено').show();
+        $button.find('.btn-loading').hide();
+        
+        // Reset after 2 seconds
+        setTimeout(function() {
+            $button.removeClass('success').prop('disabled', false);
+            $button.find('.btn-text').text('Добави в количката');
+        }, 2000);
     }
     
     /**
      * Update cart count
      */
     function updateCartCount(count) {
-        const $cartCount = $('#cart-count');
+        const $cartCount = $('.cart-count');
         $cartCount.text(count);
         
         // Animation
@@ -315,17 +373,40 @@
         const $modal = $('#cart-modal');
         
         if ($modal.is(':visible')) {
-            $modal.fadeOut(300);
+            closeCartModal();
         } else {
-            loadCartContents();
-            $modal.fadeIn(300);
+            openCartModal();
         }
+    }
+    
+    /**
+     * Open cart modal
+     */
+    function openCartModal() {
+        console.log('Opening cart modal');
+        loadCartContents();
+        $('#cart-modal').fadeIn(300);
+        $('body').addClass('modal-open');
+    }
+    
+    /**
+     * Close cart modal
+     */
+    function closeCartModal() {
+        console.log('Closing cart modal');
+        $('#cart-modal').fadeOut(300);
+        $('body').removeClass('modal-open');
     }
     
     /**
      * Load cart contents
      */
     function loadCartContents() {
+        console.log('Loading cart contents');
+        
+        const $cartItems = $('.cart-items');
+        $cartItems.html('<div class="loading-cart"><div class="loading"></div><p>Зарежда...</p></div>');
+        
         $.ajax({
             url: tetradkata_ajax.ajax_url,
             type: 'POST',
@@ -334,10 +415,70 @@
                 nonce: tetradkata_ajax.nonce
             },
             success: function(response) {
+                console.log('Cart contents loaded:', response);
+                
                 if (response.success) {
-                    $('.cart-items').html(response.data.cart_html);
+                    $cartItems.html(response.data.cart_html);
                     $('#cart-total-amount').text(response.data.cart_total);
+                    
+                    // Update cart count in header
+                    updateCartCount(response.data.cart_count);
+                    
+                    // Show/hide checkout button based on cart state
+                    const $checkoutBtn = $('.cart-footer .btn-primary');
+                    if (response.data.is_empty) {
+                        $checkoutBtn.hide();
+                    } else {
+                        $checkoutBtn.show();
+                    }
+                } else {
+                    $cartItems.html('<div class="cart-error">Грешка при зареждане на количката</div>');
                 }
+            },
+            error: function(xhr, status, error) {
+                console.error('Error loading cart contents:', {xhr, status, error});
+                $cartItems.html('<div class="cart-error">Грешка при зареждане на количката</div>');
+            }
+        });
+    }
+    
+    /**
+     * Remove item from cart
+     */
+    function removeCartItem(cartItemKey) {
+        if (!cartItemKey) {
+            console.error('No cart item key provided');
+            return;
+        }
+        
+        console.log('Removing cart item:', cartItemKey);
+        
+        $.ajax({
+            url: tetradkata_ajax.ajax_url,
+            type: 'POST',
+            data: {
+                action: 'tetradkata_remove_cart_item',
+                cart_item_key: cartItemKey,
+                nonce: tetradkata_ajax.nonce
+            },
+            success: function(response) {
+                console.log('Remove cart item response:', response);
+                
+                if (response.success) {
+                    // Reload cart contents
+                    loadCartContents();
+                    
+                    // Update cart count
+                    updateCartCount(response.data.cart_count);
+                    
+                    showNotification('Продуктът е премахнат от количката', 'success');
+                } else {
+                    showNotification(response.data.message || 'Грешка при премахване', 'error');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Error removing cart item:', {xhr, status, error});
+                showNotification('Грешка при премахване на продукта', 'error');
             }
         });
     }
@@ -401,6 +542,11 @@
         $('form').on('submit', function(e) {
             const $form = $(this);
             let isValid = true;
+            
+            // Skip cart forms and WooCommerce forms
+            if ($form.hasClass('cart') || $form.closest('.woocommerce').length) {
+                return;
+            }
             
             // Validate required fields
             $form.find('[required]').each(function() {
@@ -471,6 +617,7 @@
             if (e.key === 'Escape') {
                 $('#cart-modal').fadeOut(300);
                 $('.product-modal').fadeOut(300);
+                $('#quick-view-modal').fadeOut(300);
             }
         });
         
@@ -577,14 +724,18 @@
      * Show notification
      */
     function showNotification(message, type = 'info', duration = 5000) {
+        // Remove existing notifications
+        $('.tetradkata-notification').remove();
+        
         const $notification = $(`
-            <div class="notification notification-${type}">
+            <div class="tetradkata-notification notification-${type}">
                 <span class="notification-message">${message}</span>
                 <button class="notification-close">&times;</button>
             </div>
         `);
         
-        $('#notification-container').append($notification);
+        // Add to page
+        $('body').append($notification);
         
         // Show notification
         setTimeout(function() {
@@ -647,106 +798,17 @@
     }
     
     /**
-     * Utility functions
+     * Make functions available globally
      */
     window.TetradkataTheme = {
         showNotification: showNotification,
         hideNotification: hideNotification,
         trackEvent: trackEvent,
         updateCartCount: updateCartCount,
-        toggleCartModal: toggleCartModal
+        toggleCartModal: toggleCartModal,
+        openCartModal: openCartModal,
+        closeCartModal: closeCartModal,
+        loadCartContents: loadCartContents
     };
     
 })(jQuery);
-
-// Additional CSS animations and styles
-const additionalStyles = `
-    <style>
-    /* Animation classes */    
-    .product-card,
-    .step,
-    .faq-item {
-        opacity: 0;
-        transform: translateY(30px);
-        transition: opacity 0.6s ease, transform 0.6s ease;
-    }
-    
-    .animate-in {
-        opacity: 1;
-        transform: translateY(0);
-        transition: opacity 0.6s ease, transform 0.6s ease;
-    }
-
-    /* Button animations */
-    .btn-success {
-        background: #22c55e !important;
-        transform: scale(1.05);
-    }
-    
-    .cart-count-updated {
-        animation: cartBounce 0.6s ease-in-out;
-    }
-    
-    @keyframes cartBounce {
-        0%, 100% { transform: scale(1); }
-        50% { transform: scale(1.3); }
-    }
-    
-    /* Focus styles for accessibility */
-    .focused,
-    *:focus {
-        outline: 2px solid var(--gold-start);
-        outline-offset: 2px;
-    }
-    
-    /* Header hide animation */
-    .header-hidden {
-        transform: translateY(-100%);
-        transition: transform 0.3s ease;
-    }
-    
-    /* Error styles */
-    .error {
-        border-color: #ef4444 !important;
-        box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
-    }
-    
-    /* Loading states */
-    .btn:disabled {
-        opacity: 0.7;
-        cursor: not-allowed;
-    }
-    
-    /* Responsive improvements */
-    @media (max-width: 768px) {
-        .notification {
-            margin: 0 10px 10px;
-            min-width: auto;
-        }
-        
-        .cookie-banner {
-            padding: 15px;
-        }
-        
-        .cookie-content {
-            flex-direction: column;
-            gap: 15px;
-        }
-    }
-    
-    /* Print optimizations */
-    @media print {
-        .btn,
-        .notification,
-        .cookie-banner,
-        .swiper-button-next,
-        .swiper-button-prev,
-        .swiper-pagination {
-            display: none !important;
-        }
-    }
-    </style>
-`;
-
-// Inject additional styles
-document.head.insertAdjacentHTML('beforeend', additionalStyles);

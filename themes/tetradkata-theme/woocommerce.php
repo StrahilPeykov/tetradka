@@ -91,17 +91,18 @@ get_header(); ?>
                         <?php
                         global $product;
                         $is_featured = get_post_meta(get_the_ID(), '_tetradkata_featured', true);
+                        $product_image = get_the_post_thumbnail_url(get_the_ID(), 'medium');
+                        if (!$product_image) {
+                            $product_image = get_template_directory_uri() . '/assets/images/product-placeholder.jpg';
+                        }
                         ?>
                         
                         <div class="product-card woocommerce-product">
                             <div class="product-image">
                                 <a href="<?php the_permalink(); ?>">
-                                    <?php if (has_post_thumbnail()) : ?>
-                                        <?php the_post_thumbnail('medium', array('class' => 'product-thumbnail')); ?>
-                                    <?php else : ?>
-                                        <img src="<?php echo get_template_directory_uri(); ?>/assets/images/product-placeholder.jpg" 
-                                             alt="<?php the_title(); ?>" class="product-thumbnail">
-                                    <?php endif; ?>
+                                    <img src="<?php echo esc_url($product_image); ?>" 
+                                         alt="<?php echo esc_attr(get_the_title()); ?>" 
+                                         class="product-thumbnail">
                                 </a>
                                 
                                 <?php if ($is_featured) : ?>
@@ -139,8 +140,8 @@ get_header(); ?>
                                     <?php if ($product->is_type('simple') && $product->is_purchasable() && $product->is_in_stock()) : ?>
                                         <button class="btn btn-primary add-to-cart-btn" 
                                                 data-product-id="<?php echo get_the_ID(); ?>"
-                                                data-product-name="<?php the_title(); ?>"
-                                                data-product-price="<?php echo $product->get_price(); ?>">
+                                                data-product-name="<?php echo esc_attr(get_the_title()); ?>"
+                                                data-product-price="<?php echo esc_attr($product->get_price()); ?>">
                                             <span class="btn-text">Добави в количката</span>
                                             <span class="btn-loading" style="display: none;">
                                                 <span class="loading"></span> Добавя...
@@ -179,6 +180,25 @@ get_header(); ?>
                 </div>
                 
             <?php endif; ?>
+        </div>
+    </div>
+</div>
+
+<!-- Cart Modal (same as main page) -->
+<div id="cart-modal" class="cart-modal" style="display: none;">
+    <div class="cart-modal-content">
+        <div class="cart-header">
+            <h3>Количка</h3>
+            <button class="close-cart">&times;</button>
+        </div>
+        <div class="cart-items">
+            <!-- Cart items will be loaded here -->
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <strong>Общо: <span id="cart-total-amount">0.00 лв.</span></strong>
+            </div>
+            <a href="<?php echo wc_get_checkout_url(); ?>" class="btn btn-primary">Към плащане</a>
         </div>
     </div>
 </div>
@@ -552,7 +572,6 @@ get_header(); ?>
 </style>
 
 <script>
-// Quick view functionality
 jQuery(document).ready(function($) {
     // Quick view button click
     $('.quick-view-btn').on('click', function(e) {
@@ -563,15 +582,33 @@ jQuery(document).ready(function($) {
         loadQuickView(productId);
     });
     
-    // Close modal
+    // Close modal events
     $(document).on('click', '.modal-close, .modal-overlay', function() {
         $('#quick-view-modal').fadeOut(300);
     });
     
+    // Close modal with ESC key
+    $(document).on('keydown', function(e) {
+        if (e.key === 'Escape') {
+            $('#quick-view-modal').fadeOut(300);
+            $('#cart-modal').fadeOut(300);
+        }
+    });
+    
     // Filter functionality
     $('.category-filter, .price-filter').on('change', function() {
-        // Add filter functionality here
-        console.log('Filter changed:', $(this).val());
+        // Basic filter functionality - can be enhanced
+        const category = $('.category-filter').val();
+        const price = $('.price-filter').val();
+        
+        if (category || price) {
+            console.log('Filtering by:', { category, price });
+            // Here you would implement AJAX filtering
+            // For now, just redirect to category page if category is selected
+            if (category) {
+                window.location.href = '/product-category/' + category;
+            }
+        }
     });
 });
 
@@ -579,7 +616,7 @@ function loadQuickView(productId) {
     const $modal = $('#quick-view-modal');
     const $content = $('.quick-view-content');
     
-    $content.html('<div class="loading-spinner"><div class="loading"></div><p>Зарежда...</p></div>');
+    $content.html('<div class="loading-spinner" style="text-align: center; padding: 40px;"><div class="loading"></div><p>Зарежда...</p></div>');
     $modal.fadeIn(300);
     
     // AJAX call to load product details
@@ -595,11 +632,11 @@ function loadQuickView(productId) {
             if (response.success) {
                 $content.html(response.data.html);
             } else {
-                $content.html('<p>Възникна грешка при зареждане на продукта.</p>');
+                $content.html('<div style="text-align: center; padding: 40px;"><p>Възникна грешка при зареждане на продукта.</p></div>');
             }
         },
         error: function() {
-            $content.html('<p>Възникна грешка при зареждане на продукта.</p>');
+            $content.html('<div style="text-align: center; padding: 40px;"><p>Възникна грешка при зареждане на продукта.</p></div>');
         }
     });
 }

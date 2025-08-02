@@ -90,15 +90,17 @@ get_header(); ?>
         <div class="products-grid">
             <?php
             if (class_exists('WooCommerce')) {
+                // Updated query to work with modern WooCommerce
                 $args = array(
                     'post_type' => 'product',
                     'posts_per_page' => 6,
                     'post_status' => 'publish',
                     'meta_query' => array(
+                        'relation' => 'AND',
                         array(
-                            'key' => '_visibility',
-                            'value' => array('catalog', 'visible'),
-                            'compare' => 'IN'
+                            'key' => '_stock_status',
+                            'value' => 'instock',
+                            'compare' => '='
                         )
                     )
                 );
@@ -110,23 +112,46 @@ get_header(); ?>
                         $products->the_post();
                         global $product;
                         
+                        // Skip if product is not visible
+                        if (!$product || !$product->is_visible()) {
+                            continue;
+                        }
+                        
                         $is_featured = get_post_meta(get_the_ID(), '_tetradkata_featured', true);
+                        $product_image = get_the_post_thumbnail_url(get_the_ID(), 'medium');
+                        if (!$product_image) {
+                            $product_image = get_template_directory_uri() . '/assets/images/product-placeholder.jpg';
+                        }
                         ?>
                         <div class="product-card">
-                            <div class="product-image" style="background-image: url('<?php echo get_the_post_thumbnail_url(get_the_ID(), 'medium'); ?>');">
+                            <div class="product-image" style="background-image: url('<?php echo esc_url($product_image); ?>');">
                                 <?php if ($is_featured): ?>
                                     <div class="product-badge">Хит продажби</div>
+                                <?php endif; ?>
+                                <?php if ($product->is_on_sale()): ?>
+                                    <div class="product-badge sale-badge">Намаление</div>
                                 <?php endif; ?>
                             </div>
                             <div class="product-info">
                                 <h3 class="product-title"><?php the_title(); ?></h3>
                                 <div class="product-price"><?php echo $product->get_price_html(); ?></div>
                                 <div class="product-description"><?php echo wp_trim_words(get_the_excerpt(), 15); ?></div>
-                                <button class="btn btn-primary add-to-cart-btn" 
-                                        data-product-id="<?php echo get_the_ID(); ?>"
-                                        data-product-name="<?php the_title(); ?>">
-                                    Добави в количката
-                                </button>
+                                
+                                <?php if ($product->is_type('simple') && $product->is_purchasable() && $product->is_in_stock()) : ?>
+                                    <button class="btn btn-primary add-to-cart-btn" 
+                                            data-product-id="<?php echo get_the_ID(); ?>"
+                                            data-product-name="<?php echo esc_attr(get_the_title()); ?>"
+                                            data-product-price="<?php echo esc_attr($product->get_price()); ?>">
+                                        <span class="btn-text">Добави в количката</span>
+                                        <span class="btn-loading" style="display: none;">
+                                            <span class="loading"></span> Добавя...
+                                        </span>
+                                    </button>
+                                <?php else : ?>
+                                    <a href="<?php the_permalink(); ?>" class="btn btn-secondary">
+                                        Виж детайли
+                                    </a>
+                                <?php endif; ?>
                             </div>
                         </div>
                         <?php
@@ -171,6 +196,14 @@ get_header(); ?>
             }
             ?>
         </div>
+        
+        <?php if (class_exists('WooCommerce')) : ?>
+            <div class="shop-cta" style="text-align: center; margin-top: 40px;">
+                <a href="<?php echo get_permalink(wc_get_page_id('shop')); ?>" class="btn btn-secondary">
+                    Виж всички продукти
+                </a>
+            </div>
+        <?php endif; ?>
     </div>
 </section>
 
@@ -312,17 +345,24 @@ get_header(); ?>
             <div class="cart-total">
                 <strong>Общо: <span id="cart-total-amount">0.00 лв.</span></strong>
             </div>
-            <a href="<?php echo wc_get_checkout_url(); ?>" class="btn btn-primary">Към плащане</a>
+            <?php if (class_exists('WooCommerce')) : ?>
+                <a href="<?php echo wc_get_checkout_url(); ?>" class="btn btn-primary">Към плащане</a>
+            <?php endif; ?>
         </div>
     </div>
 </div>
 
-<!-- Success Message -->
-<div id="success-message" class="success-message" style="display: none;">
-    <div class="success-content">
-        <span class="success-icon">✓</span>
-        <span class="success-text">Продуктът е добавен в количката!</span>
-    </div>
-</div>
+<style>
+/* Additional styles for sale badge */
+.sale-badge {
+    left: 15px !important;
+    right: auto !important;
+    background: #ef4444 !important;
+}
+
+.shop-cta {
+    margin-top: 40px;
+}
+</style>
 
 <?php get_footer(); ?>
