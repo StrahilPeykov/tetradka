@@ -321,7 +321,7 @@ function tetradkata_quick_view() {
                             data-product-name="<?php echo esc_attr($product->get_name()); ?>">
                         <span class="btn-text">Добави в количката</span>
                         <span class="btn-loading" style="display: none;">
-                            <span class="loading"></span> Добавя...
+                            <span class="loading"></span> Добавяне...
                         </span>
                     </button>
                     <a href="<?php echo $product->get_permalink(); ?>" class="btn btn-secondary">
