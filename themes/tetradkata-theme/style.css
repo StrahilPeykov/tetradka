@@ -4,10 +4,8 @@ Description: Custom theme for Tetradkata travel journal e-commerce site
 Version: 1.0
 */
 
-/* Import Google Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Bad+Script&family=Cormorant+Garamond:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&family=Crimson+Text:wght@400;600;700&display=swap');
 
-/* CSS Variables for Color Palette */
 :root {
     --primary-taupe: #BDB0A5;
     --warm-beige: #E6DED5;
@@ -17,7 +15,6 @@ Version: 1.0
     --gold-end: #E9C887;
     --white: #ffffff;
     
-    /* Typography */
     --font-script: 'Great Vibes', cursive;
     --font-decorative: 'Bad Script', cursive;
     --font-heading: 'Cormorant Garamond', serif;
@@ -26,7 +23,6 @@ Version: 1.0
     --font-hero-subtitle: 'Playfair Display', serif;
 }
 
-/* Reset and Base Styles */
 * {
     margin: 0;
     padding: 0;
@@ -41,7 +37,6 @@ body {
     overflow-x: hidden;
 }
 
-/* Typography */
 h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-heading);
     font-weight: 600;
@@ -62,7 +57,6 @@ h3 { font-size: clamp(1.5rem, 3vw, 2.2rem); }
     font-family: var(--font-decorative);
 }
 
-/* Utility Classes */
 .container {
     max-width: 1200px;
     margin: 0 auto;
@@ -73,7 +67,6 @@ h3 { font-size: clamp(1.5rem, 3vw, 2.2rem); }
 .text-left { text-align: left; }
 .text-right { text-align: right; }
 
-/* Buttons */
 .btn {
     display: inline-block;
     padding: 15px 30px;
@@ -148,7 +141,6 @@ h3 { font-size: clamp(1.5rem, 3vw, 2.2rem); }
     box-shadow: 0 6px 20px rgba(189, 176, 165, 0.3);
 }
 
-/* Header */
 header {
     background: var(--white);
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
@@ -223,7 +215,6 @@ header {
     min-width: 22px;
 }
 
-/* Hero Section */
 .hero {
     background: linear-gradient(135deg, var(--warm-beige) 0%, var(--paper-bg) 100%);
     padding: 140px 0 120px;
@@ -235,7 +226,6 @@ header {
     align-items: center;
 }
 
-/* Simple decorative elements for hero */
 .hero::before {
     content: '';
     position: absolute;
@@ -315,7 +305,6 @@ header {
     box-shadow: 0 8px 25px rgba(0,0,0,0.1);
 }
 
-/* Carousel Section */
 .carousel-section {
     padding: 100px 0;
     background: var(--white);
@@ -368,7 +357,6 @@ header {
     box-shadow: 0 4px 15px rgba(182, 129, 58, 0.3);
 }
 
-/* Replace ugly text with beautiful arrows */
 .swiper-button-next::after,
 .swiper-button-prev::after {
     content: '' !important;
@@ -438,7 +426,6 @@ header {
     margin-bottom: 10px;
 }
 
-/* Shop Section */
 .shop-section {
     padding: 80px 0;
     background: var(--warm-beige);
@@ -488,7 +475,6 @@ header {
     position: relative;
 }
 
-/* Product Grid */
 .products-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -607,7 +593,6 @@ header {
     opacity: 0.8;
 }
 
-/* How It Works Section */
 .how-it-works {
     padding: 80px 0;
     background: var(--paper-bg);
@@ -715,7 +700,6 @@ header {
     line-height: 1.6;
 }
 
-/* About Section */
 .about-section {
     padding: 80px 0;
     background: var(--white);
@@ -815,7 +799,6 @@ header {
     animation: shimmer 3s ease-in-out infinite;
 }
 
-/* FAQ Section */
 .faq-section {
     padding: 80px 0;
     background: var(--warm-beige);
@@ -927,18 +910,6 @@ header {
     animation: slideDown 0.3s ease-out;
 }
 
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        max-height: 0;
-    }
-    to {
-        opacity: 1;
-        max-height: 200px;
-    }
-}
-
-/* Footer */
 footer {
     background: var(--charcoal);
     color: var(--white);
@@ -973,7 +944,6 @@ footer {
     text-align: center;
 }
 
-/* Additional animations and polish */
 .hero-content > * {
     opacity: 0;
     transform: translateY(30px);
@@ -996,19 +966,10 @@ footer {
     animation-delay: 0.8s;
 }
 
-@keyframes fadeInUp {
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Better section spacing */
 section {
     position: relative;
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
     .container {
         padding: 0 15px;
@@ -1088,7 +1049,6 @@ section {
     }
 }
 
-/* WooCommerce Overrides */
 .woocommerce .button {
     background: linear-gradient(135deg, var(--gold-start), var(--gold-end));
     color: var(--white);
@@ -1105,7 +1065,6 @@ section {
     font-weight: 700;
 }
 
-/* Loading Animation */
 .loading {
     display: inline-block;
     width: 20px;
@@ -1116,11 +1075,43 @@ section {
     animation: spin 1s ease-in-out infinite;
 }
 
-@keyframes spin {
-    to { transform: rotate(360deg); }
-}
-
-/* Smooth Scrolling */
 html {
     scroll-behavior: smooth;
+}
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        max-height: 0;
+    }
+    to {
+        opacity: 1;
+        max-height: 200px;
+    }
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+}
+
+@keyframes sway {
+    0%, 100% { transform: translateX(-50%) rotate(-5deg); }
+    50% { transform: translateX(-50%) rotate(5deg); }
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
 }

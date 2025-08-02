@@ -1,13 +1,12 @@
 <?php
 /**
- * The main template file - Single Page Layout
+ * The main template file
  *
  * @package TetradkataTheme
  */
 
 get_header(); ?>
 
-<!-- Hero Section -->
 <section class="hero" id="home">
     <div class="container">
         <div class="hero-content">
@@ -19,7 +18,6 @@ get_header(); ?>
     </div>
 </section>
 
-<!-- Carousel Section -->
 <section class="carousel-section" id="gallery">
     <div class="container">
         <div class="section-header">
@@ -78,7 +76,6 @@ get_header(); ?>
     </div>
 </section>
 
-<!-- Shop Section -->
 <section class="shop-section" id="shop">
     <div class="container">
         <div class="section-header">
@@ -90,7 +87,6 @@ get_header(); ?>
         <div class="products-grid">
             <?php
             if (class_exists('WooCommerce')) {
-                // Updated query to work with modern WooCommerce
                 $args = array(
                     'post_type' => 'product',
                     'posts_per_page' => 6,
@@ -112,7 +108,6 @@ get_header(); ?>
                         $products->the_post();
                         global $product;
                         
-                        // Skip if product is not visible
                         if (!$product || !$product->is_visible()) {
                             continue;
                         }
@@ -137,21 +132,7 @@ get_header(); ?>
                                 <div class="product-price"><?php echo $product->get_price_html(); ?></div>
                                 <div class="product-description"><?php echo wp_trim_words(get_the_excerpt(), 15); ?></div>
                                 
-                                <?php if ($product->is_type('simple') && $product->is_purchasable() && $product->is_in_stock()) : ?>
-                                    <button class="btn btn-primary add-to-cart-btn" 
-                                            data-product-id="<?php echo get_the_ID(); ?>"
-                                            data-product-name="<?php echo esc_attr(get_the_title()); ?>"
-                                            data-product-price="<?php echo esc_attr($product->get_price()); ?>">
-                                        <span class="btn-text">Добави в количката</span>
-                                        <span class="btn-loading" style="display: none;">
-                                            <span class="loading"></span> Добавя...
-                                        </span>
-                                    </button>
-                                <?php else : ?>
-                                    <a href="<?php the_permalink(); ?>" class="btn btn-secondary">
-                                        Виж детайли
-                                    </a>
-                                <?php endif; ?>
+                                <?php tetradkata_add_to_cart_button($product); ?>
                             </div>
                         </div>
                         <?php
@@ -161,7 +142,6 @@ get_header(); ?>
                     echo '<p>Няма налични продукти в момента.</p>';
                 }
             } else {
-                // Fallback content if WooCommerce is not active
                 ?>
                 <div class="product-card">
                     <div class="product-image" style="background-image: url('<?php echo get_template_directory_uri(); ?>/assets/images/tetradka-main.jpg');">
@@ -207,7 +187,6 @@ get_header(); ?>
     </div>
 </section>
 
-<!-- How It Works Section -->
 <section class="how-it-works" id="how-it-works">
     <div class="container">
         <div class="section-header">
@@ -236,7 +215,6 @@ get_header(); ?>
     </div>
 </section>
 
-<!-- About Section -->
 <section class="about-section" id="about">
     <div class="container">
         <div class="about-content">
@@ -258,7 +236,6 @@ get_header(); ?>
     </div>
 </section>
 
-<!-- FAQ Section -->
 <section class="faq-section" id="faq">
     <div class="container">
         <div class="section-header">
@@ -331,7 +308,6 @@ get_header(); ?>
     </div>
 </section>
 
-<!-- Cart Modal -->
 <div id="cart-modal" class="cart-modal" style="display: none;">
     <div class="cart-modal-content">
         <div class="cart-header">
@@ -351,18 +327,5 @@ get_header(); ?>
         </div>
     </div>
 </div>
-
-<style>
-/* Additional styles for sale badge */
-.sale-badge {
-    left: 15px !important;
-    right: auto !important;
-    background: #ef4444 !important;
-}
-
-.shop-cta {
-    margin-top: 40px;
-}
-</style>
 
 <?php get_footer(); ?>
