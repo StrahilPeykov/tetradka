@@ -71,9 +71,14 @@
 
             <div class="header-cta">
                 <?php if (class_exists('WooCommerce')) : ?>
-                    <a href="<?php echo wc_get_cart_url(); ?>" class="cart-icon" id="cart-toggle">
+                    <button type="button" class="cart-icon" id="cart-toggle" aria-label="Отвори количката">
                         <span class="dashicons dashicons-cart"></span>
                         <span class="cart-count" id="cart-count"><?php echo WC()->cart->get_cart_contents_count(); ?></span>
+                    </button>
+                <?php else : ?>
+                    <a href="#" class="cart-icon" id="cart-toggle" aria-label="Отвори количката">
+                        <span class="dashicons dashicons-cart"></span>
+                        <span class="cart-count" id="cart-count">0</span>
                     </a>
                 <?php endif; ?>
                 
@@ -93,5 +98,107 @@
         <p>Зарежда...</p>
     </div>
 </div>
+
+<style>
+/* Header specific styles */
+.site-header {
+    transition: all 0.3s ease;
+}
+
+.site-header.header-scrolled {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 2px 20px rgba(0,0,0,0.15);
+}
+
+.site-header.header-hidden {
+    transform: translateY(-100%);
+}
+
+.cart-icon {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+}
+
+.cart-icon:focus {
+    outline: 2px solid var(--gold-start);
+    outline-offset: 2px;
+    border-radius: 50%;
+}
+
+.scroll-to-top {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background: linear-gradient(135deg, var(--gold-start), var(--gold-end));
+    color: var(--white);
+    border: none;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(182, 129, 58, 0.3);
+    transition: all 0.3s ease;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.scroll-to-top:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(182, 129, 58, 0.4);
+}
+
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(248, 246, 244, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    backdrop-filter: blur(5px);
+}
+
+.loading-spinner {
+    text-align: center;
+    color: var(--charcoal);
+}
+
+.loading-spinner .loading {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    border: 4px solid var(--warm-beige);
+    border-radius: 50%;
+    border-top-color: var(--gold-start);
+    animation: spin 1s ease-in-out infinite;
+    margin-bottom: 15px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Ensure proper header spacing */
+@media (max-width: 768px) {
+    .scroll-to-top {
+        bottom: 20px;
+        right: 20px;
+        width: 45px;
+        height: 45px;
+    }
+}
+</style>
 
 <main id="main" class="site-main">

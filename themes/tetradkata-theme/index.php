@@ -308,24 +308,4 @@ get_header(); ?>
     </div>
 </section>
 
-<div id="cart-modal" class="cart-modal" style="display: none;">
-    <div class="cart-modal-content">
-        <div class="cart-header">
-            <h3>Количка</h3>
-            <button class="close-cart">&times;</button>
-        </div>
-        <div class="cart-items">
-            <!-- Cart items will be loaded here -->
-        </div>
-        <div class="cart-footer">
-            <div class="cart-total">
-                <strong>Общо: <span id="cart-total-amount">0.00 лв.</span></strong>
-            </div>
-            <?php if (class_exists('WooCommerce')) : ?>
-                <a href="<?php echo wc_get_checkout_url(); ?>" class="btn btn-primary">Към плащане</a>
-            <?php endif; ?>
-        </div>
-    </div>
-</div>
-
 <?php get_footer(); ?>

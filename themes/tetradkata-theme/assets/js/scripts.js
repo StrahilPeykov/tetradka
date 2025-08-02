@@ -189,6 +189,7 @@
     function initializeCartFunctionality() {
         console.log('Initializing cart functionality');
         
+        // Add to cart button
         $(document).off('click.tetradkata', '.add-to-cart-btn').on('click.tetradkata', '.add-to-cart-btn', function(e) {
             e.preventDefault();
             
@@ -253,23 +254,35 @@
             });
         });
         
+        // Cart toggle button
         $(document).off('click.tetradkata', '#cart-toggle').on('click.tetradkata', '#cart-toggle', function(e) {
             e.preventDefault();
             console.log('Cart toggle clicked');
             toggleCartModal();
         });
         
-        $(document).off('click.tetradkata', '.close-cart, .cart-modal').on('click.tetradkata', '.close-cart, .cart-modal', function(e) {
+        // Close cart - fixed event handler
+        $(document).off('click.tetradkata', '.close-cart').on('click.tetradkata', '.close-cart', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('Close cart clicked');
+            closeCartModal();
+        });
+        
+        // Cart modal background click
+        $(document).off('click.tetradkata', '.cart-modal').on('click.tetradkata', '.cart-modal', function(e) {
             if (e.target === this) {
-                console.log('Closing cart modal');
+                console.log('Cart modal background clicked');
                 closeCartModal();
             }
         });
         
+        // Prevent modal content click from closing
         $(document).off('click.tetradkata', '.cart-modal-content').on('click.tetradkata', '.cart-modal-content', function(e) {
             e.stopPropagation();
         });
         
+        // Remove cart item
         $(document).off('click.tetradkata', '.remove-cart-item').on('click.tetradkata', '.remove-cart-item', function(e) {
             e.preventDefault();
             e.stopPropagation();
@@ -278,6 +291,7 @@
             removeCartItem(cartItemKey);
         });
         
+        // Escape key to close modal
         $(document).off('keydown.tetradkata').on('keydown.tetradkata', function(e) {
             if (e.key === 'Escape') {
                 closeCartModal();
@@ -349,7 +363,7 @@
     function toggleCartModal() {
         const $modal = $('#cart-modal');
         
-        if ($modal.is(':visible')) {
+        if ($modal.hasClass('show') || $modal.is(':visible')) {
             closeCartModal();
         } else {
             openCartModal();
@@ -359,13 +373,26 @@
     function openCartModal() {
         console.log('Opening cart modal');
         loadCartContents();
-        $('#cart-modal').fadeIn(300);
+        
+        const $modal = $('#cart-modal');
+        $modal.addClass('show').show();
         $('body').addClass('modal-open');
+        
+        // Focus management for accessibility
+        setTimeout(function() {
+            $modal.find('.close-cart').focus();
+        }, 300);
     }
     
     function closeCartModal() {
         console.log('Closing cart modal');
-        $('#cart-modal').fadeOut(300);
+        const $modal = $('#cart-modal');
+        
+        $modal.removeClass('show');
+        setTimeout(function() {
+            $modal.hide();
+        }, 300);
+        
         $('body').removeClass('modal-open');
     }
     
@@ -554,7 +581,7 @@
     function initializeKeyboardNavigation() {
         $(document).on('keydown', function(e) {
             if (e.key === 'Escape') {
-                $('#cart-modal').fadeOut(300);
+                closeCartModal();
                 $('.product-modal').fadeOut(300);
                 $('#quick-view-modal').fadeOut(300);
             }
@@ -644,9 +671,10 @@
     }
     
     /**
-     * Notifications
+     * Notifications - Fixed positioning to avoid cart overlap
      */
     function showNotification(message, type = 'info', duration = 5000) {
+        // Remove existing notifications
         $('.tetradkata-notification').remove();
         
         const $notification = $(`
