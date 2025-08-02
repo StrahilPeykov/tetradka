@@ -72,45 +72,6 @@ add_filter('woocommerce_loop_add_to_cart_link', function($button, $product) {
 }, 10, 2);
 
 /**
- * Featured Products Meta Box
- */
-function tetradkata_add_featured_meta_box() {
-    add_meta_box(
-        'tetradkata_featured',
-        'Препоръчан продукт',
-        'tetradkata_featured_meta_box_callback',
-        'product',
-        'side'
-    );
-}
-add_action('add_meta_boxes', 'tetradkata_add_featured_meta_box');
-
-function tetradkata_featured_meta_box_callback($post) {
-    wp_nonce_field('tetradkata_featured_nonce', 'tetradkata_featured_nonce');
-    $value = get_post_meta($post->ID, '_tetradkata_featured', true);
-    echo '<label for="tetradkata_featured">';
-    echo '<input type="checkbox" id="tetradkata_featured" name="tetradkata_featured" value="1" ' . checked(1, $value, false) . '>';
-    echo ' Маркирай като препоръчан продукт</label>';
-}
-
-function tetradkata_save_featured_meta_box($post_id) {
-    if (!isset($_POST['tetradkata_featured_nonce']) || !wp_verify_nonce($_POST['tetradkata_featured_nonce'], 'tetradkata_featured_nonce')) {
-        return;
-    }
-    
-    if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE) {
-        return;
-    }
-    
-    if (isset($_POST['tetradkata_featured'])) {
-        update_post_meta($post_id, '_tetradkata_featured', 1);
-    } else {
-        delete_post_meta($post_id, '_tetradkata_featured');
-    }
-}
-add_action('save_post', 'tetradkata_save_featured_meta_box');
-
-/**
  * WooCommerce Button Overrides
  */
 function tetradkata_woocommerce_button_classes($classes) {

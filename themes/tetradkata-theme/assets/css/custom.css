@@ -868,11 +868,13 @@ body.modal-open {
 }
 
 /* Additional sale badge styling */
+/*
 .sale-badge {
     left: 15px !important;
     right: auto !important;
     background: #ef4444 !important;
 }
+*/
 
 /* Shop CTA styling */
 .shop-cta {

@@ -85,7 +85,6 @@ get_header(); ?>
                         <?php the_post(); ?>
                         <?php
                         global $product;
-                        $is_featured = get_post_meta(get_the_ID(), '_tetradkata_featured', true);
                         $product_image = get_the_post_thumbnail_url(get_the_ID(), 'medium');
                         if (!$product_image) {
                             $product_image = get_template_directory_uri() . '/assets/images/product-placeholder.jpg';
@@ -99,14 +98,6 @@ get_header(); ?>
                                          alt="<?php echo esc_attr(get_the_title()); ?>" 
                                          class="product-thumbnail">
                                 </a>
-                                
-                                <?php if ($is_featured) : ?>
-                                    <div class="product-badge featured">Хит продажби</div>
-                                <?php endif; ?>
-                                
-                                <?php if ($product->is_on_sale()) : ?>
-                                    <div class="product-badge sale">Намаление</div>
-                                <?php endif; ?>
                                 
                                 <button class="quick-view-btn" data-product-id="<?php echo get_the_ID(); ?>">
                                     Бърз преглед

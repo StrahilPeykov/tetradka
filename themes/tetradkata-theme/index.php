@@ -112,7 +112,6 @@ get_header(); ?>
                             continue;
                         }
                         
-                        $is_featured = get_post_meta(get_the_ID(), '_tetradkata_featured', true);
                         $product_image = get_the_post_thumbnail_url(get_the_ID(), 'medium');
                         if (!$product_image) {
                             $product_image = get_template_directory_uri() . '/assets/images/product-placeholder.jpg';
@@ -120,19 +119,15 @@ get_header(); ?>
                         ?>
                         <div class="product-card">
                             <div class="product-image" style="background-image: url('<?php echo esc_url($product_image); ?>');">
-                                <?php if ($is_featured): ?>
-                                    <div class="product-badge">Хит продажби</div>
-                                <?php endif; ?>
-                                <?php if ($product->is_on_sale()): ?>
-                                    <div class="product-badge sale-badge">Намаление</div>
-                                <?php endif; ?>
                             </div>
                             <div class="product-info">
                                 <h3 class="product-title"><?php the_title(); ?></h3>
                                 <div class="product-price"><?php echo $product->get_price_html(); ?></div>
                                 <div class="product-description"><?php echo wp_trim_words(get_the_excerpt(), 15); ?></div>
                                 
-                                <?php tetradkata_add_to_cart_button($product); ?>
+                                <div class="product-actions">
+                                    <?php tetradkata_add_to_cart_button($product); ?>
+                                </div>
                             </div>
                         </div>
                         <?php
@@ -145,13 +140,14 @@ get_header(); ?>
                 ?>
                 <div class="product-card">
                     <div class="product-image" style="background-image: url('<?php echo get_template_directory_uri(); ?>/assets/images/tetradka-main.jpg');">
-                        <div class="product-badge">Хит продажби</div>
                     </div>
                     <div class="product-info">
                         <h3 class="product-title">Тетрадката - Колекция от спомени</h3>
                         <div class="product-price">45.00 лв.</div>
                         <div class="product-description">Уникален дневник за пътешествия с карти, предизвикателства и пространство за творчество.</div>
-                        <button class="btn btn-primary">Купи сега</button>
+                        <div class="product-actions">
+                            <button class="btn btn-primary">Купи сега</button>
+                        </div>
                     </div>
                 </div>
                 <div class="product-card">
@@ -160,7 +156,9 @@ get_header(); ?>
                         <h3 class="product-title">Комплект стикери</h3>
                         <div class="product-price">12.00 лв.</div>
                         <div class="product-description">Красиви стикери за декориране на вашата тетрадка и спомени.</div>
-                        <button class="btn btn-primary">Купи сега</button>
+                        <div class="product-actions">
+                            <button class="btn btn-primary">Купи сега</button>
+                        </div>
                     </div>
                 </div>
                 <div class="product-card">
@@ -169,7 +167,9 @@ get_header(); ?>
                         <h3 class="product-title">Цветни маркери</h3>
                         <div class="product-price">18.00 лв.</div>
                         <div class="product-description">Професионални цветни маркери за рисуване и оцветяване.</div>
-                        <button class="btn btn-primary">Купи сега</button>
+                        <div class="product-actions">
+                            <button class="btn btn-primary">Купи сега</button>
+                        </div>
                     </div>
                 </div>
                 <?php

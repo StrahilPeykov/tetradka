@@ -11,7 +11,6 @@ get_header(); ?>
     <?php
     global $product;
     $product_id = get_the_ID();
-    $is_featured = get_post_meta($product_id, '_tetradkata_featured', true);
     $gallery_images = $product->get_gallery_image_ids();
     ?>
 
@@ -38,23 +37,6 @@ get_header(); ?>
                                  src="<?php echo get_template_directory_uri(); ?>/assets/images/product-placeholder.jpg" 
                                  alt="<?php the_title(); ?>"
                                  class="product-main-image">
-                        <?php endif; ?>
-                        
-                        <?php if ($product->is_on_sale()) : ?>
-                            <div class="sale-badge">
-                                <?php
-                                if ($product->get_type() === 'simple') {
-                                    $percentage = round((($product->get_regular_price() - $product->get_sale_price()) / $product->get_regular_price()) * 100);
-                                    echo '-' . $percentage . '%';
-                                } else {
-                                    echo 'Намаление';
-                                }
-                                ?>
-                            </div>
-                        <?php endif; ?>
-                        
-                        <?php if ($is_featured) : ?>
-                            <div class="featured-badge">Хит продажби</div>
                         <?php endif; ?>
                     </div>
                     

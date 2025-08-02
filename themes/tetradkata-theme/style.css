@@ -489,6 +489,9 @@ header {
     box-shadow: 0 10px 30px rgba(0,0,0,0.1);
     transition: all 0.4s ease;
     position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 }
 
 .product-card::before {
@@ -538,24 +541,12 @@ header {
     opacity: 1;
 }
 
-.product-badge {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    background: linear-gradient(135deg, var(--gold-start), var(--gold-end));
-    color: var(--white);
-    padding: 8px 16px;
-    border-radius: 25px;
-    font-size: 12px;
-    font-weight: 600;
-    box-shadow: 0 4px 15px rgba(182, 129, 58, 0.3);
-    transform: rotate(-5deg);
-    z-index: 2;
-}
-
 .product-info {
     padding: 25px;
     position: relative;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
 }
 
 .product-info::before {
@@ -591,6 +582,13 @@ header {
     margin-bottom: 20px;
     color: var(--charcoal);
     opacity: 0.8;
+    flex: 1;
+    min-height: 60px;
+}
+
+.product-actions {
+    margin-top: auto;
+    padding-top: 15px;
 }
 
 .how-it-works {
