@@ -85,11 +85,10 @@ function tetradkata_ajax_add_to_cart() {
         $cart_item_key = WC()->cart->add_to_cart($product_id, $quantity);
         
         if ($cart_item_key) {
-            $cart_count = WC()->cart->get_cart_contents_count();
-            $cart_total_raw = WC()->cart->get_cart_contents_total() + WC()->cart->get_cart_tax();
-            $cart_total = number_format($cart_total_raw, 2, ',', ' ') . ' лв.';
-            
             WC()->cart->calculate_totals();
+            $cart_count     = WC()->cart->get_cart_contents_count();
+            $cart_total_raw = WC()->cart->get_total('raw');
+            $cart_total     = number_format($cart_total_raw, 2, ',', ' ') . ' лв.';
             
             wp_send_json_success(array(
                 'message' => 'Product added to cart successfully',
