@@ -54,6 +54,38 @@ add_filter('woocommerce_get_price_thousand_separator', function() { return ' '; 
 add_filter('woocommerce_get_price_decimal_separator', function() { return ','; });
 
 /**
+ * Custom function to display only regular price (no sale price)
+ */
+function tetradkata_get_regular_price_html($product) {
+    if (!$product || !is_object($product)) {
+        return '';
+    }
+    
+    $regular_price = $product->get_regular_price();
+    
+    if (empty($regular_price)) {
+        return '';
+    }
+    
+    $price_html = wc_price($regular_price);
+    
+    return $price_html;
+}
+
+/**
+ * Override WooCommerce price display to show only regular price
+ */
+function tetradkata_custom_price_html($price_html, $product) {
+    // Only apply this to shop/category pages and product cards, not single product pages
+    if (is_product()) {
+        return $price_html; // Keep original behavior on single product page
+    }
+    
+    return tetradkata_get_regular_price_html($product);
+}
+add_filter('woocommerce_get_price_html', 'tetradkata_custom_price_html', 10, 2);
+
+/**
  * Product Placeholder Image
  */
 function tetradkata_custom_woocommerce_placeholder_img_src($src) {
