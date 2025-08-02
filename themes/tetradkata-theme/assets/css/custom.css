@@ -886,3 +886,125 @@ body.modal-open {
 .processing .btn-loading {
     display: inline-flex;
 }
+
+/* Cookie Banner Styles */
+.cookie-banner {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--white);
+    border-top: 3px solid var(--gold-start);
+    box-shadow: 0 -5px 20px rgba(0,0,0,0.15);
+    z-index: 10000;
+    padding: 0;
+    transform: translateY(100%);
+    transition: transform 0.4s ease-out;
+}
+
+.cookie-banner[style*="block"] {
+    transform: translateY(0);
+}
+
+.cookie-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+    gap: 30px;
+}
+
+.cookie-message {
+    flex: 1;
+    color: var(--charcoal);
+    min-width: 0; /* Allows text to wrap if needed */
+}
+
+.cookie-message p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.cookie-link {
+    color: var(--gold-start);
+    text-decoration: underline;
+    font-weight: 600;
+}
+
+.cookie-link:hover {
+    color: var(--gold-end);
+    text-decoration: none;
+}
+
+.cookie-actions {
+    display: flex;
+    gap: 15px;
+    flex-shrink: 0;
+}
+
+.cookie-banner .btn-small {
+    padding: 10px 20px;
+    font-size: 14px;
+    min-width: 100px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+/* Prevent the main button hover transform for cookie banner only */
+.cookie-banner .btn-primary:hover {
+    background: linear-gradient(135deg, var(--gold-end), var(--gold-start));
+    transform: translateY(-1px); /* Much smaller transform */
+    box-shadow: 0 6px 20px rgba(182, 129, 58, 0.4);
+    /* Keep original padding - no padding changes */
+}
+
+.cookie-banner .btn-primary:hover::after {
+    display: none; /* Remove the arrow that adds padding */
+}
+
+.cookie-banner .btn-secondary:hover {
+    background: var(--primary-taupe);
+    color: var(--white);
+    transform: translateY(-1px); /* Much smaller transform */
+    box-shadow: 0 4px 15px rgba(189, 176, 165, 0.3);
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .cookie-content {
+        flex-direction: column;
+        text-align: center;
+        gap: 20px;
+        padding: 20px 15px;
+    }
+    
+    .cookie-actions {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .btn-small {
+        flex: 1;
+        max-width: 120px;
+    }
+}
+
+/* Animation for smooth appearance */
+@keyframes cookieSlideIn {
+    from {
+        transform: translateY(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.cookie-banner.cookie-show {
+    animation: cookieSlideIn 0.4s ease-out forwards;
+}
+

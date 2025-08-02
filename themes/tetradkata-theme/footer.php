@@ -1,3 +1,10 @@
+<?php
+/**
+ * The footer for the theme
+ *
+ * @package TetradkataTheme
+ */
+?>
 </main>
 
 <footer id="colophon" class="site-footer">
@@ -100,6 +107,7 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    // Smooth scrolling for anchor links
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
             e.preventDefault();
@@ -113,40 +121,56 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    // Header scroll effects
     const header = document.querySelector('.site-header');
     const scrollToTopBtn = document.getElementById('scroll-to-top');
     
     window.addEventListener('scroll', function() {
         if (window.scrollY > 100) {
             header.classList.add('header-scrolled');
-            scrollToTopBtn.style.display = 'block';
+            if (scrollToTopBtn) {
+                scrollToTopBtn.style.display = 'block';
+            }
         } else {
             header.classList.remove('header-scrolled');
-            scrollToTopBtn.style.display = 'none';
+            if (scrollToTopBtn) {
+                scrollToTopBtn.style.display = 'none';
+            }
         }
     });
 
-    scrollToTopBtn.addEventListener('click', function() {
-        window.scrollTo({
-            top: 0,
-            behavior: 'smooth'
+    // Scroll to top functionality
+    if (scrollToTopBtn) {
+        scrollToTopBtn.addEventListener('click', function() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
         });
-    });
+    }
 
+    // Cookie Banner functionality
     const cookieBanner = document.getElementById('cookie-banner');
     const acceptCookies = document.getElementById('accept-cookies');
     const declineCookies = document.getElementById('decline-cookies');
     
+    // Show cookie banner if consent not given
     if (!localStorage.getItem('cookieConsent')) {
         setTimeout(() => {
             cookieBanner.style.display = 'block';
+            // Add class for smooth animation
+            setTimeout(() => {
+                cookieBanner.classList.add('cookie-show');
+            }, 50);
         }, 2000);
     }
     
+    // Accept cookies
     acceptCookies.addEventListener('click', function() {
         localStorage.setItem('cookieConsent', 'accepted');
-        cookieBanner.style.display = 'none';
+        hideCookieBanner();
         
+        // Initialize tracking scripts
         if (typeof gtag !== 'undefined') {
             gtag('consent', 'update', {
                 'analytics_storage': 'granted'
@@ -158,14 +182,26 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
+    // Decline cookies
     declineCookies.addEventListener('click', function() {
         localStorage.setItem('cookieConsent', 'declined');
-        cookieBanner.style.display = 'none';
+        hideCookieBanner();
     });
+    
+    // Function to hide banner with animation
+    function hideCookieBanner() {
+        cookieBanner.classList.remove('cookie-show');
+        setTimeout(() => {
+            cookieBanner.style.display = 'none';
+        }, 400); // Match the CSS transition duration
+    }
 });
 
+// Notification system
 function showNotification(message, type = 'info') {
     const container = document.getElementById('notification-container');
+    if (!container) return;
+    
     const notification = document.createElement('div');
     notification.className = `notification notification-${type}`;
     notification.innerHTML = `
@@ -197,6 +233,7 @@ function hideNotification(notification) {
     }, 300);
 }
 
+// Swiper initialization
 function initSwiper() {
     if (typeof Swiper !== 'undefined' && document.querySelector('.tetradkata-swiper')) {
         const swiper = new Swiper('.tetradkata-swiper', {
@@ -231,6 +268,7 @@ function initSwiper() {
     return null;
 }
 
+// Initialize Swiper with multiple attempts
 document.addEventListener('DOMContentLoaded', function() {
     let swiperInstance = initSwiper();
     
@@ -256,6 +294,11 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 500);
     }
 });
+
+// Global functions for theme integration
+window.TetradkataTheme = window.TetradkataTheme || {};
+window.TetradkataTheme.showNotification = showNotification;
+window.TetradkataTheme.hideNotification = hideNotification;
 </script>
 
 </body>
