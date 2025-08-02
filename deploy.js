@@ -10,11 +10,11 @@ const minimist = require('minimist');
 // Parse command line arguments
 const args = minimist(process.argv.slice(2));
 
-// Configuration
+// Configuration - supports environment variables for CI/CD
 const config = {
-    host: 'ftpupload.net',
-    user: 'if0_39618140',
-    password: 'tetradkatapass1',
+    host: process.env.FTP_HOST || 'ftpupload.net',
+    user: process.env.FTP_USER || 'if0_39618140',
+    password: process.env.FTP_PASSWORD,
     secure: false,
     
     // Paths for wp-content level repo
@@ -24,7 +24,10 @@ const config = {
     // Deployment options from command line
     dryRun: args['dry-run'] || false,
     assetsOnly: args['assets-only'] || false,
-    verbose: args.verbose || args.v || false
+    verbose: args.verbose || args.v || false,
+    
+    // CI/CD detection
+    isCI: process.env.CI || process.env.GITHUB_ACTIONS || false
 };
 
 // Logging functions
@@ -34,7 +37,8 @@ const log = {
     warning: (msg) => console.log(chalk.yellow('⚠'), msg),
     error: (msg) => console.log(chalk.red('❌'), msg),
     verbose: (msg) => config.verbose && console.log(chalk.gray('🔍'), msg),
-    title: (msg) => console.log(chalk.bold.cyan('\n🚀', msg))
+    title: (msg) => console.log(chalk.bold.cyan('\n🚀', msg)),
+    ci: (msg) => config.isCI && console.log(chalk.magenta('🤖'), msg)
 };
 
 // Check if theme directory exists
@@ -156,17 +160,34 @@ async function uploadTheme(client) {
         
         // Progress indicator
         const progress = Math.round((successCount / totalFiles) * 100);
-        process.stdout.write(`\r${chalk.blue('📤')} Progress: ${progress}% (${successCount}/${totalFiles})`);
+        
+        if (config.isCI) {
+            // In CI, show less frequent progress updates
+            if (successCount % 5 === 0 || successCount === totalFiles) {
+                log.ci(`Progress: ${progress}% (${successCount}/${totalFiles})`);
+            }
+        } else {
+            process.stdout.write(`\r${chalk.blue('📤')} Progress: ${progress}% (${successCount}/${totalFiles})`);
+        }
     }
     
-    console.log(''); // New line after progress
+    if (!config.isCI) {
+        console.log(''); // New line after progress
+    }
+    
     log.success(`Theme upload completed: ${successCount}/${totalFiles} files`);
     return successCount === totalFiles;
 }
 
 // Main deployment function
 async function deploy() {
-    log.title('Tetradkata Theme Deployment');
+    if (config.isCI) {
+        log.title('Tetradkata Theme Deployment (CI/CD)');
+        log.ci(`Deploying from: ${process.env.GITHUB_REF || 'Unknown branch'}`);
+        log.ci(`Commit: ${process.env.GITHUB_SHA?.substring(0, 7) || 'Unknown'}`);
+    } else {
+        log.title('Tetradkata Theme Deployment');
+    }
     
     if (config.dryRun) {
         log.warning('DRY RUN MODE - No files will actually be uploaded');
@@ -203,8 +224,17 @@ async function deploy() {
         if (themeSuccess) {
             log.success('🎉 Deployment completed successfully!');
             log.info(`Visit your site: ${chalk.underline('https://tetradkata.rf.gd')}`);
+            
+            if (config.isCI) {
+                log.ci('Automatic deployment completed');
+                // GitHub Actions specific output
+                console.log('::notice::Deployment completed successfully');
+            }
         } else {
             log.warning('Deployment completed with some errors');
+            if (config.isCI) {
+                process.exit(1); // Fail the CI build
+            }
         }
         
     } catch (error) {
@@ -212,6 +242,11 @@ async function deploy() {
         if (config.verbose) {
             console.error(error);
         }
+        
+        if (config.isCI) {
+            console.log('::error::Deployment failed');
+        }
+        
         process.exit(1);
     } finally {
         client.close();
@@ -238,8 +273,16 @@ async function testConnection() {
         await client.cd('/htdocs/wp-content/themes/');
         log.success('Remote theme directory accessible');
         
+        if (config.isCI) {
+            log.ci('FTP connection test passed in CI environment');
+        }
+        
     } catch (error) {
         log.error(`Connection failed: ${error.message}`);
+        if (config.isCI) {
+            console.log('::error::FTP connection test failed');
+            process.exit(1);
+        }
     } finally {
         client.close();
     }
@@ -257,16 +300,15 @@ ${chalk.bold('Usage:')}
   npm run deploy:verbose            Deploy with detailed output
   npm run test-connection           Test FTP connection
 
-${chalk.bold('Manual Usage:')}
-  node deploy.js                    Deploy all files
-  node deploy.js --assets-only      Deploy assets only
-  node deploy.js --dry-run          Preview deployment
-  node deploy.js --verbose          Detailed output
+${chalk.bold('Environment Variables:')}
+  FTP_HOST                          FTP server hostname
+  FTP_USER                          FTP username
+  FTP_PASSWORD                      FTP password
 
 ${chalk.bold('Examples:')}
   npm run deploy:dry-run            Preview deployment
   npm run deploy:assets             Deploy only CSS/JS changes
-  npm run deploy:verbose            Deploy with detailed logs
+  FTP_HOST=custom.host npm run deploy    Use custom FTP settings
 `);
 }
 
