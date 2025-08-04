@@ -45,8 +45,8 @@
                 <ul class="footer-menu">
                     <li><a href="/dostavka">Доставка</a></li>
                     <li><a href="/vrashtania">Връщания</a></li>
-                    <li><a href="/usloviya">Условия за ползване</a></li>
-                    <li><a href="/poveritelnost">Политика за поверителност</a></li>
+                    <li><a href="/obshti-usloviya">Условия за ползване</a></li>
+                    <li><a href="/politika-za-poveritelnost">Политика за поверителност</a></li>
                 </ul>
             </div>
 
