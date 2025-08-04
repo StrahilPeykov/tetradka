@@ -55,8 +55,8 @@
                 <div class="contact-info">
                     <p>
                         <span class="dashicons dashicons-email"></span>
-                        <a href="mailto:<?php echo get_theme_mod('contact_email', 'info@tetradkata.bg'); ?>">
-                            <?php echo get_theme_mod('contact_email', 'info@tetradkata.bg'); ?>
+                        <a href="mailto:thenotebook.sales@gmail.com">
+                            thenotebook.sales@gmail.com
                         </a>
                     </p>
                     <p>
@@ -64,6 +64,10 @@
                         <a href="tel:<?php echo str_replace(' ', '', get_theme_mod('contact_phone', '+359888123456')); ?>">
                             <?php echo get_theme_mod('contact_phone', '+359 888 123 456'); ?>
                         </a>
+                    </p>
+                    <p>
+                        <span class="dashicons dashicons-location"></span>
+                        Варна, жк Възраждане, бл. 30, вх. 2, ап. 33
                     </p>
                     <p>
                         <span class="dashicons dashicons-clock"></span>

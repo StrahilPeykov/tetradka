@@ -245,16 +245,130 @@ add_filter('default_checkout_billing_country', 'tetradkata_change_default_checko
 add_filter('default_checkout_shipping_country', 'tetradkata_change_default_checkout_country');
 
 /**
+ * Personalization Functions
+ */
+
+// Add personalization fee via AJAX
+function tetradkata_add_personalization_fee() {
+    if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'tetradkata_nonce')) {
+        wp_send_json_error(array('message' => 'Security check failed'));
+        return;
+    }
+    
+    WC()->session->set('add_personalization', true);
+    
+    wp_send_json_success(array('message' => 'Personalization fee added'));
+}
+add_action('wp_ajax_add_personalization_fee', 'tetradkata_add_personalization_fee');
+add_action('wp_ajax_nopriv_add_personalization_fee', 'tetradkata_add_personalization_fee');
+
+// Remove personalization fee via AJAX
+function tetradkata_remove_personalization_fee() {
+    if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'tetradkata_nonce')) {
+        wp_send_json_error(array('message' => 'Security check failed'));
+        return;
+    }
+    
+    WC()->session->set('add_personalization', false);
+    
+    wp_send_json_success(array('message' => 'Personalization fee removed'));
+}
+add_action('wp_ajax_remove_personalization_fee', 'tetradkata_remove_personalization_fee');
+add_action('wp_ajax_nopriv_remove_personalization_fee', 'tetradkata_remove_personalization_fee');
+
+// Add personalization fee to cart
+function tetradkata_add_cart_personalization_fee($cart) {
+    if (is_admin() && !defined('DOING_AJAX')) {
+        return;
+    }
+    
+    if (!WC()->session) {
+        return;
+    }
+    
+    $add_personalization = WC()->session->get('add_personalization');
+    
+    if ($add_personalization) {
+        $fee = 5.00; // 5 BGN
+        $cart->add_fee('Персонализация', $fee, true);
+    }
+}
+add_action('woocommerce_cart_calculate_fees', 'tetradkata_add_cart_personalization_fee');
+
+// Save personalization data with order
+function tetradkata_save_personalization_data($order_id) {
+    if (isset($_POST['add_personalization']) && $_POST['add_personalization'] === 'yes') {
+        update_post_meta($order_id, '_personalization_enabled', 'yes');
+        
+        if (isset($_POST['personalization_name'])) {
+            $personalization_name = sanitize_text_field($_POST['personalization_name']);
+            update_post_meta($order_id, '_personalization_name', $personalization_name);
+        }
+    }
+}
+add_action('woocommerce_checkout_update_order_meta', 'tetradkata_save_personalization_data');
+
+// Display personalization info in admin order page
+function tetradkata_display_admin_order_personalization($order) {
+    $personalization_enabled = get_post_meta($order->get_id(), '_personalization_enabled', true);
+    
+    if ($personalization_enabled === 'yes') {
+        $personalization_name = get_post_meta($order->get_id(), '_personalization_name', true);
+        ?>
+        <div class="order_data_column" style="width: 100%; margin-top: 20px;">
+            <h3>Персонализация</h3>
+            <p><strong>Име за корицата:</strong> <?php echo esc_html($personalization_name); ?></p>
+        </div>
+        <?php
+    }
+}
+add_action('woocommerce_admin_order_data_after_order_details', 'tetradkata_display_admin_order_personalization');
+
+// Add personalization info to order emails
+function tetradkata_add_personalization_to_emails($order, $sent_to_admin, $plain_text, $email) {
+    $personalization_enabled = get_post_meta($order->get_id(), '_personalization_enabled', true);
+    
+    if ($personalization_enabled === 'yes') {
+        $personalization_name = get_post_meta($order->get_id(), '_personalization_name', true);
+        
+        if ($plain_text) {
+            echo "\n\nПерсонализация:\n";
+            echo "Име за корицата: " . $personalization_name . "\n";
+        } else {
+            echo '<h2>Персонализация</h2>';
+            echo '<p><strong>Име за корицата:</strong> ' . esc_html($personalization_name) . '</p>';
+        }
+    }
+}
+add_action('woocommerce_email_order_meta', 'tetradkata_add_personalization_to_emails', 10, 4);
+
+// Disable COD when personalization is selected
+function tetradkata_disable_cod_for_personalization($available_gateways) {
+    if (is_admin()) {
+        return $available_gateways;
+    }
+    
+    if (WC()->session && WC()->session->get('add_personalization')) {
+        if (isset($available_gateways['cod'])) {
+            unset($available_gateways['cod']);
+        }
+    }
+    
+    return $available_gateways;
+}
+add_filter('woocommerce_available_payment_gateways', 'tetradkata_disable_cod_for_personalization');
+
+/**
  * Enqueue Scripts and Styles
  */
 function tetradkata_scripts() {
     wp_enqueue_style('dashicons');
-    wp_enqueue_style('tetradkata-style', get_stylesheet_uri(), array(), '1.0.4');
+    wp_enqueue_style('tetradkata-style', get_stylesheet_uri(), array(), '1.0.5');
     wp_enqueue_style('swiper-css', 'https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.css', array(), '8.0.0');
-    wp_enqueue_style('tetradkata-custom', get_template_directory_uri() . '/assets/css/custom.css', array('tetradkata-style'), '1.0.4');
+    wp_enqueue_style('tetradkata-custom', get_template_directory_uri() . '/assets/css/custom.css', array('tetradkata-style'), '1.0.5');
     
     wp_enqueue_script('swiper-js', 'https://cdn.jsdelivr.net/npm/swiper@8/swiper-bundle.min.js', array(), '8.0.0', true);
-    wp_enqueue_script('tetradkata-scripts', get_template_directory_uri() . '/assets/js/scripts.js', array('jquery', 'swiper-js'), '1.0.4', true);
+    wp_enqueue_script('tetradkata-scripts', get_template_directory_uri() . '/assets/js/scripts.js', array('jquery', 'swiper-js'), '1.0.5', true);
     
     wp_localize_script('tetradkata-scripts', 'tetradkata_ajax', array(
         'ajax_url' => admin_url('admin-ajax.php'),
@@ -634,5 +748,32 @@ function tetradkata_force_bulgarian_locale($locale) {
     return $locale;
 }
 add_filter('locale', 'tetradkata_force_bulgarian_locale');
+
+/**
+ * Clear personalization session data after order is placed
+ */
+function tetradkata_clear_personalization_session($order_id) {
+    if (WC()->session) {
+        WC()->session->set('add_personalization', false);
+    }
+}
+add_action('woocommerce_thankyou', 'tetradkata_clear_personalization_session');
+
+/**
+ * Display personalization in order item meta
+ */
+function tetradkata_display_order_item_personalization($item_id, $item, $order) {
+    if ($order && method_exists($order, 'get_meta')) {
+        $personalization_enabled = $order->get_meta('_personalization_enabled');
+        $personalization_name = $order->get_meta('_personalization_name');
+        
+        if ($personalization_enabled === 'yes' && $personalization_name) {
+            echo '<div class="personalization-info" style="margin-top: 10px; padding: 10px; background: #f5f5f5; border-radius: 5px;">';
+            echo '<strong>Персонализация:</strong> ' . esc_html($personalization_name);
+            echo '</div>';
+        }
+    }
+}
+add_action('woocommerce_order_item_meta_end', 'tetradkata_display_order_item_personalization', 10, 3);
 
 ?>
