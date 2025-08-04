@@ -26,10 +26,9 @@ get_header(); ?>
                         // Output any WooCommerce notices
                         wc_print_notices();
                         
-                        // Check if checkout form should be displayed
+                        // Login form only (no coupon form)
                         if (WC()->cart->needs_payment()) {
                             woocommerce_checkout_login_form();
-                            woocommerce_checkout_coupon_form();
                         }
                         
                         // Checkout form
@@ -301,6 +300,12 @@ get_header(); ?>
     background: linear-gradient(135deg, var(--gold-end), var(--gold-start)) !important;
     transform: translateY(-2px);
     box-shadow: 0 8px 25px rgba(182, 129, 58, 0.4);
+}
+
+/* Hide coupon form */
+.woocommerce-form-coupon-toggle,
+.checkout_coupon {
+    display: none !important;
 }
 
 /* Mobile responsive */

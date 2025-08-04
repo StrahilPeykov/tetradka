@@ -41,6 +41,210 @@ function tetradkata_theme_setup() {
 add_action('after_setup_theme', 'tetradkata_theme_setup');
 
 /**
+ * Bulgarian Translations for WooCommerce
+ */
+function tetradkata_translate_woocommerce_strings($translation, $text, $domain) {
+    if ($domain === 'woocommerce') {
+        $translations = array(
+            // Checkout page
+            'Billing details' => 'Данни за фактуриране',
+            'Shipping details' => 'Данни за доставка',
+            'Additional information' => 'Допълнителна информация',
+            'Your order' => 'Вашата поръчка',
+            
+            // Form fields
+            'First name' => 'Име',
+            'Last name' => 'Фамилия',
+            'Company name' => 'Име на фирма',
+            'Company name (optional)' => 'Име на фирма (незадължително)',
+            'Country / Region' => 'Държава',
+            'Street address' => 'Адрес',
+            'Apartment, suite, unit, etc. (optional)' => 'Апартамент, етаж, вход и др. (незадължително)',
+            'Town / City' => 'Град',
+            'State / County' => 'Област',
+            'State / County (optional)' => 'Област (незадължително)',
+            'Postcode / ZIP' => 'Пощенски код',
+            'Phone' => 'Телефон',
+            'Phone (optional)' => 'Телефон (незадължително)',
+            'Email address' => 'Имейл адрес',
+            'Order notes (optional)' => 'Забележки към поръчката (незадължително)',
+            
+            // Table headers
+            'Product' => 'Продукт',
+            'Subtotal' => 'Междинна сума',
+            'Total' => 'Общо',
+            'Quantity' => 'Количество',
+            
+            // Payment
+            'Payment method' => 'Начин на плащане',
+            'Place order' => 'Завърши поръчката',
+            'Cash on delivery' => 'Наложен платеж',
+            'Pay with cash upon delivery.' => 'Плащане при доставка на продуктите.',
+            'Direct bank transfer' => 'Банков превод',
+            'Bank transfer' => 'Банков превод',
+            
+            // Shipping
+            'Ship to a different address?' => 'Доставка на различен адрес?',
+            'Shipping' => 'Доставка',
+            'Free shipping' => 'Безплатна доставка',
+            
+            // Messages
+            'Your personal data will be used to process your order, support your experience throughout this website, and for other purposes described in our privacy policy.' => 'Вашите лични данни ще бъдат използвани за обработка на поръчката, подобряване на вашето изживяване в този уебсайт и за други цели, описани в нашата политика за поверителност.',
+            
+            // Validation messages
+            'Please enter a valid email address.' => 'Моля, въведете валиден имейл адрес.',
+            'This field is required.' => 'Това поле е задължително.',
+            'Please select a valid option.' => 'Моля, изберете валидна опция.',
+            'Please enter a valid phone number.' => 'Моля, въведете валиден телефонен номер.',
+            
+            // Cart/Account
+            'My account' => 'Моят профил',
+            'Dashboard' => 'Табло',
+            'Orders' => 'Поръчки',
+            'Downloads' => 'Изтегляния',
+            'Addresses' => 'Адреси',
+            'Account details' => 'Данни за профила',
+            'Logout' => 'Изход',
+            'Login' => 'Вход',
+            'Register' => 'Регистрация',
+            'Lost password' => 'Забравена парола',
+            'View cart' => 'Виж количката',
+            'Checkout' => 'Плащане',
+            
+            // Product page
+            'In stock' => 'В наличност',
+            'Out of stock' => 'Няма в наличност',
+            'Add to cart' => 'Добави в количката',
+            'Select options' => 'Избери опции',
+            'Read more' => 'Научи повече',
+            'Description' => 'Описание',
+            'Additional information' => 'Допълнителна информация',
+            'Reviews' => 'Отзиви',
+            
+            // Shop page
+            'Sort by popularity' => 'Подреди по популярност',
+            'Sort by average rating' => 'Подреди по оценка',
+            'Sort by latest' => 'Подреди по дата',
+            'Sort by price: low to high' => 'Подреди по цена: ниска към висока',
+            'Sort by price: high to low' => 'Подреди по цена: висока към ниска',
+            'Default sorting' => 'Стандартно подреждане',
+            
+            // Countries and states
+            'Select a country / region…' => 'Изберете държава...',
+            'Select an option…' => 'Изберете опция...',
+            'Bulgaria' => 'България',
+            
+            // Other common text
+            'Required' => 'Задължително',
+            'Optional' => 'Незадължително',
+            'Update' => 'Обнови',
+            'Apply' => 'Приложи',
+            'Remove' => 'Премахни',
+            'Continue' => 'Продължи',
+            'Back' => 'Назад',
+            'Next' => 'Напред',
+        );
+        
+        if (isset($translations[$text])) {
+            return $translations[$text];
+        }
+    }
+    
+    return $translation;
+}
+add_filter('gettext', 'tetradkata_translate_woocommerce_strings', 20, 3);
+
+/**
+ * Translate more WooCommerce text
+ */
+function tetradkata_translate_woocommerce_strings_with_context($translation, $text, $context, $domain) {
+    if ($domain === 'woocommerce') {
+        $translations = array(
+            'Billing details' => 'Данни за фактуриране',
+            'Ship to a different address?' => 'Доставка на различен адрес?',
+            'Create an account?' => 'Създаване на профил?',
+            'Order notes' => 'Забележки към поръчката',
+            'Notes about your order, e.g. special notes for delivery.' => 'Забележки към поръчката, напр. специални инструкции за доставка.',
+        );
+        
+        if (isset($translations[$text])) {
+            return $translations[$text];
+        }
+    }
+    
+    return $translation;
+}
+add_filter('gettext_with_context', 'tetradkata_translate_woocommerce_strings_with_context', 20, 4);
+
+/**
+ * Custom checkout field labels
+ */
+function tetradkata_override_checkout_fields($fields) {
+    // Billing fields
+    $fields['billing']['billing_first_name']['label'] = 'Име';
+    $fields['billing']['billing_last_name']['label'] = 'Фамилия';
+    $fields['billing']['billing_company']['label'] = 'Име на фирма (незадължително)';
+    $fields['billing']['billing_country']['label'] = 'Държава';
+    $fields['billing']['billing_address_1']['label'] = 'Адрес';
+    $fields['billing']['billing_address_2']['label'] = 'Апартамент, етаж, вход и др. (незадължително)';
+    $fields['billing']['billing_city']['label'] = 'Град';
+    $fields['billing']['billing_state']['label'] = 'Област';
+    $fields['billing']['billing_postcode']['label'] = 'Пощенски код';
+    $fields['billing']['billing_phone']['label'] = 'Телефон';
+    $fields['billing']['billing_email']['label'] = 'Имейл адрес';
+    
+    // Shipping fields
+    $fields['shipping']['shipping_first_name']['label'] = 'Име';
+    $fields['shipping']['shipping_last_name']['label'] = 'Фамилия';
+    $fields['shipping']['shipping_company']['label'] = 'Име на фирма (незадължително)';
+    $fields['shipping']['shipping_country']['label'] = 'Държава';
+    $fields['shipping']['shipping_address_1']['label'] = 'Адрес';
+    $fields['shipping']['shipping_address_2']['label'] = 'Апартамент, етаж, вход и др. (незадължително)';
+    $fields['shipping']['shipping_city']['label'] = 'Град';
+    $fields['shipping']['shipping_state']['label'] = 'Област';
+    $fields['shipping']['shipping_postcode']['label'] = 'Пощенски код';
+    
+    // Order notes
+    $fields['order']['order_comments']['label'] = 'Забележки към поръчката';
+    $fields['order']['order_comments']['placeholder'] = 'Забележки към поръчката, напр. специални инструкции за доставка.';
+    
+    // Placeholders
+    $fields['billing']['billing_first_name']['placeholder'] = 'Име';
+    $fields['billing']['billing_last_name']['placeholder'] = 'Фамилия';
+    $fields['billing']['billing_email']['placeholder'] = 'example@email.com';
+    $fields['billing']['billing_phone']['placeholder'] = '+359 888 123 456';
+    $fields['billing']['billing_address_1']['placeholder'] = 'ул. Име на улица, No';
+    $fields['billing']['billing_city']['placeholder'] = 'София';
+    $fields['billing']['billing_postcode']['placeholder'] = '1000';
+    
+    return $fields;
+}
+add_filter('woocommerce_checkout_fields', 'tetradkata_override_checkout_fields');
+
+/**
+ * Remove coupon functionality completely
+ */
+remove_action('woocommerce_before_checkout_form', 'woocommerce_checkout_coupon_form', 10);
+add_filter('woocommerce_coupons_enabled', '__return_false');
+
+/**
+ * Customize checkout button text
+ */
+function tetradkata_place_order_button_text($button_text) {
+    return 'Завърши поръчката';
+}
+add_filter('woocommerce_order_button_text', 'tetradkata_place_order_button_text');
+
+/**
+ * Override default country
+ */
+function tetradkata_change_default_checkout_country() {
+    return 'BG'; // Bulgaria
+}
+add_filter('default_checkout_billing_country', 'tetradkata_change_default_checkout_country');
+add_filter('default_checkout_shipping_country', 'tetradkata_change_default_checkout_country');
+
+/**
  * Enqueue Scripts and Styles
  */
 function tetradkata_scripts() {
@@ -97,6 +301,63 @@ function tetradkata_widgets_init() {
     ));
 }
 add_action('widgets_init', 'tetradkata_widgets_init');
+
+/**
+ * Add custom checkout fields for Bulgarian addresses
+ */
+function tetradkata_add_checkout_fields($fields) {
+    // Add Bulgarian-specific fields if needed
+    $fields['billing']['billing_company_vat'] = array(
+        'label'    => 'ЕИК/БУЛСТАТ (при поискана фактура)',
+        'required' => false,
+        'class'    => array('form-row-wide'),
+        'clear'    => true,
+        'type'     => 'text',
+        'priority' => 35,
+    );
+    
+    return $fields;
+}
+add_filter('woocommerce_checkout_fields', 'tetradkata_add_checkout_fields');
+
+/**
+ * Customize state options for Bulgaria
+ */
+function tetradkata_custom_states($states) {
+    $states['BG'] = array(
+        'BLG' => 'Благоевград',
+        'BGS' => 'Бургас',
+        'DOB' => 'Добрич',
+        'GAB' => 'Габрово',
+        'HAS' => 'Хасково',
+        'KRZ' => 'Кърджали',
+        'KUS' => 'Кюстендил',
+        'LOV' => 'Ловеч',
+        'MON' => 'Монтана',
+        'PAZ' => 'Пазарджик',
+        'PER' => 'Перник',
+        'PVN' => 'Плевен',
+        'PDV' => 'Пловдив',
+        'RAZ' => 'Разград',
+        'RSE' => 'Русе',
+        'SHU' => 'Шумен',
+        'SLS' => 'Силистра',
+        'SLV' => 'Сливен',
+        'SMO' => 'Смолян',
+        'SFO' => 'София област',
+        'SOF' => 'София град',
+        'SZR' => 'Стара Загора',
+        'TGV' => 'Търговище',
+        'VAR' => 'Варна',
+        'VTR' => 'Велико Търново',
+        'VID' => 'Видин',
+        'VRC' => 'Враца',
+        'YAM' => 'Ямбол',
+    );
+    
+    return $states;
+}
+add_filter('woocommerce_states', 'tetradkata_custom_states');
 
 /**
  * Helper Functions
@@ -210,4 +471,168 @@ function tetradkata_add_to_cart_button($product, $classes = 'btn btn-primary', $
         <?php
     }
 }
+
+/**
+ * Remove checkout login/coupon notices
+ */
+function tetradkata_remove_checkout_notices() {
+    if (is_admin() || !is_checkout()) {
+        return;
+    }
+    
+    // Remove returning customer notice
+    remove_action('woocommerce_before_checkout_form', 'woocommerce_checkout_login_form', 10);
+}
+add_action('init', 'tetradkata_remove_checkout_notices');
+
+/**
+ * Custom payment gateway labels
+ */
+function tetradkata_payment_gateway_titles($title, $gateway_id) {
+    switch ($gateway_id) {
+        case 'cod':
+            return 'Наложен платеж';
+        case 'bacs':
+            return 'Банков превод';
+        case 'viva':
+            return 'Плащане с карта (Viva.com)';
+        default:
+            return $title;
+    }
+}
+add_filter('woocommerce_gateway_title', 'tetradkata_payment_gateway_titles', 10, 2);
+
+/**
+ * Custom payment gateway descriptions
+ */
+function tetradkata_payment_gateway_descriptions($description, $gateway_id) {
+    switch ($gateway_id) {
+        case 'cod':
+            return 'Плащане при доставка на продуктите.';
+        case 'bacs':
+            return 'Направете директен банков превод. Поръчката ще бъде обработена след получаване на плащането.';
+        case 'viva':
+            return 'Платете безопасно с карта чрез Viva.com. Приемаме всички основни банкови карти.';
+        default:
+            return $description;
+    }
+}
+add_filter('woocommerce_gateway_description', 'tetradkata_payment_gateway_descriptions', 10, 2);
+
+/**
+ * Change privacy policy text
+ */
+function tetradkata_checkout_privacy_policy_text($text) {
+    return 'Вашите лични данни ще бъдат използвани за обработка на поръчката и подобряване на вашето изживяване в този уебсайт. Прочетете нашата <a href="/privacy-policy" target="_blank">политика за поверителност</a>.';
+}
+add_filter('woocommerce_checkout_privacy_policy_text', 'tetradkata_checkout_privacy_policy_text');
+
+/**
+ * Add custom CSS for checkout improvements
+ */
+function tetradkata_checkout_inline_styles() {
+    if (is_checkout()) {
+        ?>
+        <style>
+        /* Hide English text and improve checkout styling */
+        .woocommerce-checkout h3:has-text("Billing details"),
+        .woocommerce-checkout h3:contains("Billing details") {
+            display: none !important;
+        }
+        
+        /* Ensure privacy policy text is styled properly */
+        .woocommerce-privacy-policy-text {
+            font-size: 12px;
+            color: var(--charcoal);
+            opacity: 0.7;
+            line-height: 1.4;
+            margin-top: 15px;
+            padding: 15px;
+            background: var(--paper-bg);
+            border-radius: 8px;
+            border-left: 3px solid var(--gold-start);
+        }
+        
+        .woocommerce-privacy-policy-text a {
+            color: var(--gold-start);
+            text-decoration: underline;
+        }
+        
+        /* Better field styling */
+        .woocommerce-checkout .form-row .required {
+            color: #e74c3c;
+        }
+        
+        .woocommerce-checkout .validate-required.woocommerce-invalid input {
+            border-color: #e74c3c !important;
+            box-shadow: 0 0 0 2px rgba(231, 76, 60, 0.2);
+        }
+        
+        /* Hide coupon related elements */
+        .woocommerce-form-coupon-toggle,
+        .checkout_coupon,
+        .woocommerce-remove-coupon {
+            display: none !important;
+        }
+        
+        /* Better order review styling */
+        .woocommerce-checkout-review-order-table .product-name {
+            font-weight: 600;
+        }
+        
+        .woocommerce-checkout-review-order-table .product-total {
+            text-align: right;
+            font-weight: 600;
+        }
+        
+        /* Loading overlay for form submission */
+        .woocommerce-checkout.processing {
+            pointer-events: none;
+            position: relative;
+        }
+        
+        .woocommerce-checkout.processing::before {
+            content: 'Обработва поръчката...';
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 999999;
+            background: var(--white);
+            padding: 25px 35px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            font-weight: 600;
+            color: var(--charcoal);
+            font-size: 16px;
+        }
+        
+        .woocommerce-checkout.processing::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(248, 246, 244, 0.9);
+            z-index: 999998;
+            backdrop-filter: blur(3px);
+        }
+        </style>
+        <?php
+    }
+}
+add_action('wp_head', 'tetradkata_checkout_inline_styles');
+
+/**
+ * Force WooCommerce to use Bulgarian locale
+ */
+function tetradkata_force_bulgarian_locale($locale) {
+    if (is_checkout() || is_cart() || is_account_page()) {
+        return 'bg_BG';
+    }
+    return $locale;
+}
+add_filter('locale', 'tetradkata_force_bulgarian_locale');
+
 ?>
