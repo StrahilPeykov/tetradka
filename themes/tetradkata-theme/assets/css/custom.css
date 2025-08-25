@@ -3,6 +3,98 @@
  * Additional styles and WooCommerce customizations
  */
 
+/* Coupon Form Styling */
+.woocommerce-form-coupon-toggle {
+    text-align: center;
+    margin-bottom: 20px;
+    padding: 15px;
+    background: var(--paper-bg);
+    border-radius: 10px;
+}
+
+.woocommerce-form-coupon-toggle .showcoupon {
+    color: var(--gold-start);
+    text-decoration: underline;
+    font-weight: 600;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.woocommerce-form-coupon-toggle .showcoupon:hover {
+    color: var(--gold-end);
+}
+
+.checkout_coupon {
+    display: none;
+    background: #f0fdf4;
+    border: 2px solid #4caf50;
+    border-radius: 15px;
+    padding: 25px;
+    margin: 20px 0;
+}
+
+.checkout_coupon p {
+    margin-bottom: 15px;
+    font-style: italic;
+    color: #2e7d32;
+}
+
+.checkout_coupon .form-row {
+    display: flex;
+    gap: 15px;
+    align-items: flex-end;
+    margin: 0;
+}
+
+.checkout_coupon .form-row .input-text {
+    flex: 1;
+    padding: 12px 16px;
+    border: 2px solid #4caf50;
+    border-radius: 10px;
+    font-size: 15px;
+    background: var(--white);
+}
+
+.checkout_coupon .form-row .input-text:focus {
+    border-color: #2e7d32;
+    box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.1);
+}
+
+.checkout_coupon .form-row .button {
+    background: #4caf50 !important;
+    color: var(--white) !important;
+    border: none !important;
+    padding: 12px 25px !important;
+    border-radius: 10px !important;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.checkout_coupon .form-row .button:hover {
+    background: #2e7d32 !important;
+    transform: translateY(-1px);
+}
+
+.checkout_coupon .form-row .button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Coupon success/error messages */
+.woocommerce-message,
+.woocommerce-error {
+    border-radius: 10px;
+    margin: 15px 0;
+}
+
+.woocommerce-message {
+    background: #f0fdf4 !important;
+    border-left-color: #4caf50 !important;
+    color: #2e7d32 !important;
+}
+
 /* Cart Modal Styles */
 .cart-modal {
     position: fixed;

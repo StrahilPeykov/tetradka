@@ -45,8 +45,8 @@
                 <ul class="footer-menu">
                     <li><a href="/dostavka">Доставка</a></li>
                     <li><a href="/vrashtania">Връщания</a></li>
-                    <li><a href="/obshti-usloviya">Условия за ползване</a></li>
-                    <li><a href="/politika-za-poveritelnost">Политика за поверителност</a></li>
+                    <li><a href="/page-terms">Общи условия</a></li>
+                    <li><a href="/page-privacy">Политика за поверителност</a></li>
                 </ul>
             </div>
 
@@ -119,7 +119,7 @@
     <div class="cookie-content">
         <div class="cookie-message">
             <p>Използваме бисквитки за да подобрим вашето изживяване. Продължавайки да използвате сайта, вие се съгласявате с нашата 
-            <a href="#privacy-policy" class="cookie-link">политика за поверителност</a>.</p>
+            <a href="/page-privacy" class="cookie-link">политика за поверителност</a>.</p>
         </div>
         <div class="cookie-actions">
             <button id="accept-cookies" class="btn btn-primary btn-small">Приемам</button>

@@ -226,22 +226,23 @@ get_header(); ?>
                             <div class="shipping-option">
                                 <h4>Speedy доставка</h4>
                                 <ul>
-                                    <li>До дома/офиса: 5.99 лв. (1-2 работни дни)</li>
-                                    <li>До Speedy офис: 4.99 лв. (1-2 работни дни)</li>
-                                    <li>До Speedy автомат: 3.99 лв. (1-2 работни дни)</li>
+                                    <li>До дома/офиса: 5.99 лв. (до 3 работни дни)</li>
+                                    <li>До Speedy офис: 4.99 лв. (до 3 работни дни)</li>
+                                    <li>До Speedy автомат: 3.99 лв. (до 3 работни дни)</li>
                                 </ul>
                             </div>
                             <div class="shipping-option">
                                 <h4>Econt доставка</h4>
                                 <ul>
-                                    <li>До дома/офиса: 5.99 лв. (1-3 работни дни)</li>
-                                    <li>До Econt офис: 4.99 лв. (1-3 работни дни)</li>
-                                    <li>До Econt бокс: 3.99 лв. (1-3 работни дни)</li>
+                                    <li>До дома/офиса: 5.99 лв. (до 3 работни дни)</li>
+                                    <li>До Econt офис: 4.99 лв. (до 3 работни дни)</li>
+                                    <li>До Econt бокс: 3.99 лв. (до 3 работни дни)</li>
                                 </ul>
                             </div>
                             <div class="shipping-note">
                                 <p><strong>Безплатна доставка при поръчки над 50 лв.!</strong></p>
                                 <p>Наложен платеж: +2.99 лв. (само за адреси в България)</p>
+                                <p><em>За персонализирани продукти срокът за изпълнение е 5-7 работни дни.</em></p>
                             </div>
                         </div>
                     </div>
@@ -275,6 +276,501 @@ get_header(); ?>
     </div>
 
 <?php endwhile; ?>
+
+<style>
+/* Single Product Styles */
+.single-product-container {
+    background: var(--paper-bg);
+    padding: 120px 0 60px;
+    min-height: calc(100vh - 200px);
+}
+
+.breadcrumbs {
+    margin-bottom: 30px;
+    font-size: 14px;
+    color: var(--charcoal);
+}
+
+.breadcrumbs a {
+    color: var(--gold-start);
+    text-decoration: none;
+}
+
+.breadcrumbs a:hover {
+    text-decoration: underline;
+}
+
+.separator {
+    margin: 0 10px;
+    opacity: 0.5;
+}
+
+.current {
+    font-weight: 600;
+}
+
+.product-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    margin-bottom: 60px;
+    background: var(--white);
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+}
+
+.product-gallery {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.main-image {
+    width: 100%;
+    overflow: hidden;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.product-main-image {
+    width: 100%;
+    height: auto;
+    display: block;
+    transition: transform 0.3s ease;
+}
+
+.product-main-image:hover {
+    transform: scale(1.02);
+}
+
+.gallery-thumbnails {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.thumbnail-image {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 8px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+    opacity: 0.7;
+}
+
+.thumbnail-image:hover,
+.thumbnail-image.active {
+    opacity: 1;
+    border-color: var(--gold-start);
+    transform: scale(1.05);
+}
+
+.product-info {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.product-title {
+    color: var(--charcoal);
+    margin: 0;
+    font-size: 2.2rem;
+}
+
+.product-price {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--gold-start);
+}
+
+.product-short-description {
+    color: var(--charcoal);
+    line-height: 1.7;
+    opacity: 0.9;
+}
+
+.product-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.quantity-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.quantity-wrapper label {
+    font-weight: 600;
+    color: var(--charcoal);
+}
+
+.quantity-controls {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    width: fit-content;
+    border: 2px solid var(--warm-beige);
+    border-radius: 25px;
+    overflow: hidden;
+}
+
+.quantity-minus,
+.quantity-plus {
+    background: var(--warm-beige);
+    border: none;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--charcoal);
+    transition: all 0.3s ease;
+}
+
+.quantity-minus:hover,
+.quantity-plus:hover {
+    background: var(--gold-start);
+    color: var(--white);
+}
+
+.quantity-input {
+    border: none;
+    width: 60px;
+    height: 40px;
+    text-align: center;
+    font-size: 16px;
+    font-weight: 600;
+    background: var(--white);
+}
+
+.quantity-input:focus {
+    outline: none;
+}
+
+.add-to-cart-single {
+    width: 100%;
+    padding: 15px 30px;
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.product-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--warm-beige);
+}
+
+.meta-item {
+    font-size: 14px;
+    color: var(--charcoal);
+}
+
+.meta-item strong {
+    color: var(--charcoal);
+    margin-right: 8px;
+}
+
+.meta-item a {
+    color: var(--gold-start);
+    text-decoration: none;
+}
+
+.meta-item a:hover {
+    text-decoration: underline;
+}
+
+.trust-badges {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 30px;
+    padding: 20px;
+    background: var(--paper-bg);
+    border-radius: 10px;
+}
+
+.trust-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    color: var(--charcoal);
+}
+
+.trust-item .dashicons {
+    color: var(--gold-start);
+    font-size: 18px;
+}
+
+/* Product Tabs */
+.product-tabs {
+    background: var(--white);
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+    margin-bottom: 60px;
+}
+
+.tabs-nav {
+    display: flex;
+    gap: 0;
+    margin-bottom: 30px;
+    border-bottom: 2px solid var(--warm-beige);
+    overflow-x: auto;
+}
+
+.tab-button {
+    background: none;
+    border: none;
+    padding: 15px 25px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--charcoal);
+    opacity: 0.7;
+    transition: all 0.3s ease;
+    border-bottom: 3px solid transparent;
+    white-space: nowrap;
+}
+
+.tab-button:hover,
+.tab-button.active {
+    opacity: 1;
+    color: var(--gold-start);
+    border-bottom-color: var(--gold-start);
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.tab-content h3 {
+    color: var(--charcoal);
+    margin-bottom: 20px;
+}
+
+.additional-info-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.additional-info-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid var(--warm-beige);
+}
+
+.additional-info-table td:first-child {
+    font-weight: 600;
+    color: var(--charcoal);
+    width: 30%;
+}
+
+.shipping-info {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 30px;
+}
+
+.shipping-option {
+    background: var(--paper-bg);
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.shipping-option h4 {
+    color: var(--charcoal);
+    margin-bottom: 15px;
+}
+
+.shipping-option ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.shipping-option li {
+    padding: 8px 0;
+    color: var(--charcoal);
+    border-bottom: 1px solid rgba(189, 176, 165, 0.3);
+}
+
+.shipping-option li:last-child {
+    border-bottom: none;
+}
+
+.shipping-note {
+    grid-column: 1 / -1;
+    background: #f0fdf4;
+    border: 1px solid #4caf50;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+}
+
+.shipping-note p {
+    margin: 5px 0;
+    color: #2e7d32;
+}
+
+.shipping-note strong {
+    color: #1b5e20;
+}
+
+.shipping-note em {
+    color: #ff9800;
+    font-weight: 600;
+}
+
+/* Related Products */
+.related-products {
+    background: var(--white);
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+}
+
+.related-products h3 {
+    color: var(--charcoal);
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+.related-products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 30px;
+}
+
+.related-product {
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.related-product:hover {
+    transform: translateY(-5px);
+}
+
+.related-product a {
+    text-decoration: none;
+    color: var(--charcoal);
+}
+
+.related-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+
+.related-product h4 {
+    margin: 10px 0;
+    font-size: 1.1rem;
+}
+
+.related-price {
+    color: var(--gold-start);
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .single-product-container {
+        padding: 100px 0 40px;
+    }
+    
+    .product-layout {
+        grid-template-columns: 1fr;
+        gap: 30px;
+        padding: 25px;
+    }
+    
+    .product-title {
+        font-size: 1.8rem;
+    }
+    
+    .product-price {
+        font-size: 1.5rem;
+    }
+    
+    .tabs-nav {
+        flex-wrap: wrap;
+    }
+    
+    .tab-button {
+        flex: 1;
+        min-width: 120px;
+        padding: 12px 15px;
+        font-size: 14px;
+    }
+    
+    .shipping-info {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .related-products-grid {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 20px;
+    }
+    
+    .trust-badges {
+        padding: 15px;
+    }
+    
+    .product-tabs,
+    .related-products {
+        padding: 25px;
+    }
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Loading states */
+.add-to-cart-single.processing {
+    pointer-events: none;
+    opacity: 0.8;
+}
+
+.add-to-cart-single.success {
+    background: #22c55e !important;
+    transform: scale(1.02);
+}
+
+/* Focus styles for accessibility */
+.tab-button:focus,
+.quantity-minus:focus,
+.quantity-plus:focus,
+.add-to-cart-single:focus {
+    outline: 2px solid var(--gold-start);
+    outline-offset: 2px;
+}
+</style>
 
 <script>
 jQuery(document).ready(function($) {
@@ -346,6 +842,14 @@ jQuery(document).ready(function($) {
                         window.TetradkataTheme.updateCartCount(response.fragments['span.cart-count'] || '1');
                     }
                     
+                    $button.addClass('success');
+                    $button.find('.btn-text').text('✓ Добавено').show();
+                    
+                    setTimeout(function() {
+                        $button.removeClass('success');
+                        $button.find('.btn-text').text('Добави в количката');
+                    }, 2000);
+                    
                     if (window.TetradkataTheme) {
                         window.TetradkataTheme.trackEvent('add_to_cart', {
                             item_id: productId,
@@ -360,9 +864,12 @@ jQuery(document).ready(function($) {
                 }
             },
             complete: function() {
-                $button.find('.btn-text').show();
                 $button.find('.btn-loading').hide();
                 $button.prop('disabled', false);
+                
+                if (!$button.hasClass('success')) {
+                    $button.find('.btn-text').show();
+                }
             }
         });
     });

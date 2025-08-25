@@ -50,6 +50,20 @@ get_header(); ?>
                             <div class="checkout-layout">
                                 <div class="checkout-main">
                                     
+                                    <!-- Coupon Code Section -->
+                                    <?php if (wc_coupons_enabled()) : ?>
+                                        <div class="checkout-section coupon-section">
+                                            <h3 class="section-title">
+                                                <span class="icon">🎟️</span>
+                                                Код за отстъпка
+                                            </h3>
+                                            
+                                            <div class="coupon-wrapper">
+                                                <?php woocommerce_checkout_coupon_form(); ?>
+                                            </div>
+                                        </div>
+                                    <?php endif; ?>
+
                                     <!-- Customer Details Section -->
                                     <div class="checkout-section customer-details">
                                         <h3 class="section-title">
@@ -430,6 +444,87 @@ get_header(); ?>
     color: var(--white);
     font-weight: bold;
     font-size: 14px;
+}
+
+/* Coupon Section */
+.coupon-section {
+    background: linear-gradient(135deg, #e8f5e8 0%, #fff 100%);
+    border: 2px solid #c8e6c9;
+}
+
+.coupon-wrapper .woocommerce-form-coupon {
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+
+.coupon-wrapper .form-row {
+    display: flex;
+    gap: 15px;
+    align-items: end;
+    margin: 0;
+}
+
+.coupon-wrapper .form-row .input-text {
+    flex: 1;
+    padding: 12px 16px;
+    border: 2px solid #4caf50;
+    border-radius: 10px;
+    font-size: 15px;
+    background: #f1f8e9;
+}
+
+.coupon-wrapper .form-row .input-text:focus {
+    border-color: #2e7d32;
+    background: var(--white);
+    box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.1);
+}
+
+.coupon-wrapper .form-row .button {
+    background: #4caf50 !important;
+    color: var(--white) !important;
+    border: none !important;
+    padding: 12px 25px !important;
+    border-radius: 10px !important;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.coupon-wrapper .form-row .button:hover {
+    background: #2e7d32 !important;
+    transform: translateY(-1px);
+}
+
+.woocommerce-form-coupon-toggle {
+    margin-bottom: 20px;
+}
+
+.woocommerce-form-coupon-toggle .showcoupon {
+    color: var(--gold-start);
+    text-decoration: underline;
+    font-weight: 600;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.woocommerce-form-coupon-toggle .showcoupon:hover {
+    color: var(--gold-end);
+}
+
+.checkout_coupon {
+    margin-top: 20px;
+    padding: 20px;
+    background: rgba(255,255,255,0.8);
+    border-radius: 10px;
+    animation: slideDown 0.3s ease-out;
+}
+
+.checkout_coupon p {
+    margin-bottom: 15px;
+    font-style: italic;
+    color: #4caf50;
 }
 
 /* Personalization Section */
@@ -817,6 +912,31 @@ get_header(); ?>
 
 <script>
 jQuery(document).ready(function($) {
+    // Coupon toggle functionality
+    $('.woocommerce-form-coupon-toggle .showcoupon').on('click', function(e) {
+        e.preventDefault();
+        $('.checkout_coupon').slideToggle(300);
+    });
+    
+    // Handle coupon form submission
+    $(document).on('click', '.checkout_coupon .button[name="apply_coupon"]', function(e) {
+        e.preventDefault();
+        
+        const $button = $(this);
+        const $form = $button.closest('form');
+        const couponCode = $form.find('input[name="coupon_code"]').val();
+        
+        if (!couponCode) {
+            alert('Моля, въведете код за отстъпка');
+            return;
+        }
+        
+        $button.prop('disabled', true).text('Прилага...');
+        
+        // Let WooCommerce handle the coupon application
+        $form.submit();
+    });
+    
     // Ship to different address toggle
     $('#ship-to-different-address-checkbox').on('change', function() {
         if ($(this).is(':checked')) {

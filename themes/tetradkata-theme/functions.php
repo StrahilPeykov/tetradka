@@ -222,10 +222,50 @@ function tetradkata_override_checkout_fields($fields) {
 add_filter('woocommerce_checkout_fields', 'tetradkata_override_checkout_fields');
 
 /**
- * Remove coupon functionality completely
+ * Enable coupons and customize coupon form
  */
-remove_action('woocommerce_before_checkout_form', 'woocommerce_checkout_coupon_form', 10);
-add_filter('woocommerce_coupons_enabled', '__return_false');
+add_filter('woocommerce_coupons_enabled', '__return_true');
+
+// Customize coupon form text
+function tetradkata_coupon_form_text($text) {
+    $translations = array(
+        'Have a coupon?' => 'Имате код за отстъпка?',
+        'Click here to enter your code' => 'Кликнете тук, за да въведете вашия код',
+        'Coupon code' => 'Код за отстъпка',
+        'Apply coupon' => 'Приложи код',
+        'Please enter a coupon code.' => 'Моля, въведете код за отстъпка.',
+        'Coupon code already applied!' => 'Кодът за отстъпка вече е приложен!',
+        'Coupon "%s" applied successfully.' => 'Кодът "%s" е приложен успешно.',
+        'Coupon is not valid.' => 'Кодът за отстъпка не е валиден.',
+        'Sorry, this coupon is not valid.' => 'Съжаляваме, този код за отстъпка не е валиден.',
+        'Sorry, this coupon is not applicable to selected products.' => 'Съжаляваме, този код не се отнася за избраните продукти.',
+        'Coupon has expired.' => 'Кодът за отстъпка е изтекъл.',
+        'This coupon has expired.' => 'Този код за отстъпка е изтекъл.',
+        'Coupon removed.' => 'Кодът за отстъпка е премахнат.',
+        'Coupon "%s" removed.' => 'Кодът "%s" е премахнат.',
+    );
+    
+    return isset($translations[$text]) ? $translations[$text] : $text;
+}
+
+// Apply translations to various coupon related texts
+add_filter('woocommerce_coupon_error', 'tetradkata_coupon_form_text');
+add_filter('woocommerce_coupon_message', 'tetradkata_coupon_form_text');
+add_filter('gettext', function($translation, $text, $domain) {
+    if ($domain === 'woocommerce') {
+        $coupon_translations = array(
+            'Have a coupon?' => 'Имате код за отстъпка?',
+            'Click here to enter your code' => 'Кликнете тук, за да въведете вашия код',
+            'Coupon code' => 'Код за отстъпка',
+            'Apply coupon' => 'Приложи код',
+        );
+        
+        if (isset($coupon_translations[$text])) {
+            return $coupon_translations[$text];
+        }
+    }
+    return $translation;
+}, 20, 3);
 
 /**
  * Customize checkout button text
@@ -357,6 +397,83 @@ function tetradkata_disable_cod_for_personalization($available_gateways) {
     return $available_gateways;
 }
 add_filter('woocommerce_available_payment_gateways', 'tetradkata_disable_cod_for_personalization');
+
+/**
+ * Generate Thank You Coupon Code
+ * This function can be called after an order is completed to create a unique coupon
+ */
+function tetradkata_generate_thank_you_coupon($order_id) {
+    if (!class_exists('WC_Coupon')) {
+        return false;
+    }
+    
+    // Generate unique coupon code
+    $coupon_code = 'THANK' . strtoupper(substr(md5($order_id . time()), 0, 6));
+    
+    // Check if coupon already exists
+    if (get_page_by_title($coupon_code, OBJECT, 'shop_coupon')) {
+        return false;
+    }
+    
+    // Create new coupon
+    $coupon = new WC_Coupon();
+    $coupon->set_code($coupon_code);
+    $coupon->set_discount_type('percent');
+    $coupon->set_amount(10); // 10% discount
+    $coupon->set_individual_use(true);
+    $coupon->set_usage_limit(1);
+    $coupon->set_usage_limit_per_user(1);
+    $coupon->set_date_expires(strtotime('+6 months')); // Valid for 6 months
+    $coupon->set_description('Благодарствен купон за следваща поръчка - 10% отстъпка');
+    
+    // Save coupon
+    $coupon_id = $coupon->save();
+    
+    if ($coupon_id) {
+        // Save coupon code to order meta for reference
+        update_post_meta($order_id, '_thank_you_coupon_code', $coupon_code);
+        return $coupon_code;
+    }
+    
+    return false;
+}
+
+/**
+ * Auto-generate thank you coupon on order completion
+ * Uncomment the line below to enable automatic coupon generation
+ */
+// add_action('woocommerce_order_status_completed', 'tetradkata_generate_thank_you_coupon');
+
+/**
+ * Display thank you coupon in order confirmation emails
+ */
+function tetradkata_add_thank_you_coupon_to_email($order, $sent_to_admin, $plain_text, $email) {
+    // Only show for customer emails and completed orders
+    if ($sent_to_admin || $email->id !== 'customer_completed_order') {
+        return;
+    }
+    
+    $coupon_code = get_post_meta($order->get_id(), '_thank_you_coupon_code', true);
+    
+    if ($coupon_code) {
+        if ($plain_text) {
+            echo "\n\nБлагодарим ви за поръчката!\n";
+            echo "Като благодарност, ето вашия личен код за 10% отстъпка от следващата поръчка: " . $coupon_code . "\n";
+            echo "Кодът е валиден до " . date('d.m.Y', strtotime('+6 months')) . "\n";
+        } else {
+            echo '<div style="background: #f8f9fa; border: 2px solid #4caf50; border-radius: 10px; padding: 20px; margin: 20px 0; text-align: center;">';
+            echo '<h3 style="color: #2e7d32; margin-bottom: 15px;">🎉 Благодарим ви за поръчката!</h3>';
+            echo '<p>Като благодарност, ето вашия личен код за <strong>10% отстъпка</strong> от следващата поръчка:</p>';
+            echo '<div style="background: #fff; border: 2px dashed #4caf50; padding: 15px; margin: 15px 0; font-size: 24px; font-weight: bold; color: #2e7d32; letter-spacing: 2px;">';
+            echo $coupon_code;
+            echo '</div>';
+            echo '<p style="font-size: 14px; color: #666;">Кодът е валиден до ' . date('d.m.Y', strtotime('+6 months')) . '</p>';
+            echo '</div>';
+        }
+    }
+}
+// Uncomment the line below to enable coupon display in emails
+// add_action('woocommerce_email_order_meta', 'tetradkata_add_thank_you_coupon_to_email', 10, 4);
 
 /**
  * Enqueue Scripts and Styles
@@ -680,13 +797,6 @@ function tetradkata_checkout_inline_styles() {
         .woocommerce-checkout .validate-required.woocommerce-invalid input {
             border-color: #e74c3c !important;
             box-shadow: 0 0 0 2px rgba(231, 76, 60, 0.2);
-        }
-        
-        /* Hide coupon related elements */
-        .woocommerce-form-coupon-toggle,
-        .checkout_coupon,
-        .woocommerce-remove-coupon {
-            display: none !important;
         }
         
         /* Better order review styling */
