@@ -12,7 +12,7 @@ function tetradkata_customize_register($wp_customize) {
      * Hero Section
      */
     $wp_customize->add_section('hero_section', array(
-        'title' => __('Hero Section', 'tetradkata'),
+        'title' => __('Секция герой', 'tetradkata'),
         'priority' => 30,
     ));
     
@@ -22,7 +22,7 @@ function tetradkata_customize_register($wp_customize) {
     ));
     
     $wp_customize->add_control('hero_title', array(
-        'label' => __('Hero Title', 'tetradkata'),
+        'label' => __('Заглавие на героя', 'tetradkata'),
         'section' => 'hero_section',
         'type' => 'text',
     ));
@@ -33,7 +33,7 @@ function tetradkata_customize_register($wp_customize) {
     ));
     
     $wp_customize->add_control('hero_subtitle', array(
-        'label' => __('Hero Subtitle', 'tetradkata'),
+        'label' => __('Подзаглавие на героя', 'tetradkata'),
         'section' => 'hero_section',
         'type' => 'text',
     ));
@@ -44,7 +44,7 @@ function tetradkata_customize_register($wp_customize) {
     ));
     
     $wp_customize->add_control('hero_description', array(
-        'label' => __('Hero Description', 'tetradkata'),
+        'label' => __('Описание на героя', 'tetradkata'),
         'section' => 'hero_section',
         'type' => 'textarea',
     ));
@@ -53,7 +53,7 @@ function tetradkata_customize_register($wp_customize) {
      * Contact Section
      */
     $wp_customize->add_section('contact_section', array(
-        'title' => __('Contact Information', 'tetradkata'),
+        'title' => __('Информация за контакт', 'tetradkata'),
         'priority' => 40,
     ));
     
@@ -63,7 +63,7 @@ function tetradkata_customize_register($wp_customize) {
     ));
     
     $wp_customize->add_control('contact_phone', array(
-        'label' => __('Phone', 'tetradkata'),
+        'label' => __('Телефон', 'tetradkata'),
         'section' => 'contact_section',
         'type' => 'text',
     ));
@@ -74,7 +74,7 @@ function tetradkata_customize_register($wp_customize) {
     ));
     
     $wp_customize->add_control('contact_email', array(
-        'label' => __('Email', 'tetradkata'),
+        'label' => __('Имейл', 'tetradkata'),
         'section' => 'contact_section',
         'type' => 'email',
     ));

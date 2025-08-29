@@ -12,7 +12,7 @@
         <div class="footer-content">
             <div class="footer-section">
                 <h3><?php esc_html_e('Tetradkata', 'tetradkata'); ?></h3>
-                <p><?php esc_html_e('Your personal travel journal for adventures, memories and inspiration - all in one notebook.', 'tetradkata'); ?></p>
+                <p><?php esc_html_e('Личният ви дневник за пътешествия, спомени и вдъхновение – всичко събрано в една тетрадка.', 'tetradkata'); ?></p>
                 <div class="social-links">
                     <a href="#" class="social-link" aria-label="Facebook">
                         <span class="dashicons dashicons-facebook-alt"></span>
@@ -27,31 +27,31 @@
             </div>
 
             <div class="footer-section">
-                <h3><?php esc_html_e('Quick Links', 'tetradkata'); ?></h3>
+                <h3><?php esc_html_e('Бързи връзки', 'tetradkata'); ?></h3>
                 <ul class="footer-menu">
-                    <li><a href="<?php echo esc_url(home_url('/')); ?>#home"><?php esc_html_e('Home', 'tetradkata'); ?></a></li>
-                    <li><a href="<?php echo esc_url(home_url('/')); ?>#shop"><?php esc_html_e('Shop', 'tetradkata'); ?></a></li>
-                    <li><a href="<?php echo esc_url(home_url('/')); ?>#about"><?php esc_html_e('About', 'tetradkata'); ?></a></li>
-                    <li><a href="<?php echo esc_url(home_url('/')); ?>#faq"><?php esc_html_e('FAQ', 'tetradkata'); ?></a></li>
+                    <li><a href="<?php echo esc_url(home_url('/')); ?>#home"><?php esc_html_e('Начало', 'tetradkata'); ?></a></li>
+                    <li><a href="<?php echo esc_url(home_url('/')); ?>#shop"><?php esc_html_e('Магазин', 'tetradkata'); ?></a></li>
+                    <li><a href="<?php echo esc_url(home_url('/')); ?>#about"><?php esc_html_e('За нас', 'tetradkata'); ?></a></li>
+                    <li><a href="<?php echo esc_url(home_url('/')); ?>#faq"><?php esc_html_e('Често задавани въпроси', 'tetradkata'); ?></a></li>
                     <?php if (class_exists('WooCommerce')) : ?>
-                        <li><a href="<?php echo esc_url(wc_get_cart_url()); ?>"><?php esc_html_e('Cart', 'tetradkata'); ?></a></li>
-                        <li><a href="<?php echo esc_url(wc_get_checkout_url()); ?>"><?php esc_html_e('Checkout', 'tetradkata'); ?></a></li>
+                        <li><a href="<?php echo esc_url(wc_get_cart_url()); ?>"><?php esc_html_e('Количка', 'tetradkata'); ?></a></li>
+                        <li><a href="<?php echo esc_url(wc_get_checkout_url()); ?>"><?php esc_html_e('Плащане', 'tetradkata'); ?></a></li>
                     <?php endif; ?>
                 </ul>
             </div>
 
             <div class="footer-section">
-                <h3><?php esc_html_e('Customer Service', 'tetradkata'); ?></h3>
+                <h3><?php esc_html_e('Обслужване на клиенти', 'tetradkata'); ?></h3>
                 <ul class="footer-menu">
-                    <li><a href="<?php echo esc_url(home_url('/delivery')); ?>"><?php esc_html_e('Delivery', 'tetradkata'); ?></a></li>
-                    <li><a href="<?php echo esc_url(home_url('/returns')); ?>"><?php esc_html_e('Returns', 'tetradkata'); ?></a></li>
-                    <li><a href="<?php echo esc_url(home_url('/terms')); ?>"><?php esc_html_e('Terms & Conditions', 'tetradkata'); ?></a></li>
-                    <li><a href="<?php echo esc_url(home_url('/privacy')); ?>"><?php esc_html_e('Privacy Policy', 'tetradkata'); ?></a></li>
+                    <li><a href="<?php echo esc_url(home_url('/delivery')); ?>"><?php esc_html_e('Доставка', 'tetradkata'); ?></a></li>
+                    <li><a href="<?php echo esc_url(home_url('/returns')); ?>"><?php esc_html_e('Връщания', 'tetradkata'); ?></a></li>
+                    <li><a href="<?php echo esc_url(home_url('/terms')); ?>"><?php esc_html_e('Общи условия', 'tetradkata'); ?></a></li>
+                    <li><a href="<?php echo esc_url(home_url('/privacy')); ?>"><?php esc_html_e('Политика за поверителност', 'tetradkata'); ?></a></li>
                 </ul>
             </div>
 
             <div class="footer-section">
-                <h3><?php esc_html_e('Contact', 'tetradkata'); ?></h3>
+                <h3><?php esc_html_e('Контакти', 'tetradkata'); ?></h3>
                 <div class="contact-info">
                     <p>
                         <span class="dashicons dashicons-email"></span>
@@ -71,11 +71,11 @@
                     </p>
                     <p>
                         <span class="dashicons dashicons-location"></span>
-                        <?php esc_html_e('Varna, Vazrazhdane, bl. 30, ent. 2, apt. 33', 'tetradkata'); ?>
+                        <?php esc_html_e('Варна, Възраждане, бл. 30, вх. 2, ап. 33', 'tetradkata'); ?>
                     </p>
                     <p>
                         <span class="dashicons dashicons-clock"></span>
-                        <?php esc_html_e('Mon-Fri: 9:00 - 18:00', 'tetradkata'); ?>
+                        <?php esc_html_e('Пон-Пет: 9:00 - 18:00', 'tetradkata'); ?>
                     </p>
                 </div>
             </div>
@@ -84,12 +84,12 @@
         <div class="footer-bottom">
             <div class="footer-bottom-content">
                 <div class="copyright">
-                    <p>&copy; <?php echo esc_html(date('Y')); ?> <?php esc_html_e('Tetradkata. All rights reserved.', 'tetradkata'); ?></p>
-                    <p><?php esc_html_e('Author: Miroslava Indzhova | Design: Maria Ivanova, Doroteya Mareva, Daniela Dineva', 'tetradkata'); ?></p>
+                    <p>&copy; <?php echo esc_html(date('Y')); ?> <?php esc_html_e('Тетрадката. Всички права запазени.', 'tetradkata'); ?></p>
+                    <p><?php esc_html_e('Автор: Мирослава Инджова | Дизайн: Мария Иванова, Доротея Марева, Даниела Динева', 'tetradkata'); ?></p>
                 </div>
                 
                 <div class="payment-methods">
-                    <span><?php esc_html_e('We accept cards and cash on delivery', 'tetradkata'); ?></span>
+                    <span><?php esc_html_e('Приемаме карти и наложен платеж', 'tetradkata'); ?></span>
                 </div>
             </div>
         </div>
@@ -107,15 +107,15 @@
                 <?php 
                 printf(
                     /* translators: %s: Privacy policy link */
-                    esc_html__('We use cookies to improve your experience. By continuing to use the site, you agree to our %s.', 'tetradkata'),
-                    '<a href="' . esc_url(get_privacy_policy_url()) . '" class="cookie-link">' . esc_html__('privacy policy', 'tetradkata') . '</a>'
+                    esc_html__('Използваме бисквитки за подобряване на вашето изживяване. Продължавайки да използвате сайта, вие се съгласявате с нашата %s.', 'tetradkata'),
+                    '<a href="' . esc_url(get_privacy_policy_url()) . '" class="cookie-link">' . esc_html__('политика за поверителност', 'tetradkata') . '</a>'
                 );
                 ?>
             </p>
         </div>
         <div class="cookie-actions">
-            <button id="accept-cookies" class="btn btn-primary btn-small"><?php esc_html_e('Accept', 'tetradkata'); ?></button>
-            <button id="decline-cookies" class="btn btn-secondary btn-small"><?php esc_html_e('Decline', 'tetradkata'); ?></button>
+            <button id="accept-cookies" class="btn btn-primary btn-small"><?php esc_html_e('Приемам', 'tetradkata'); ?></button>
+            <button id="decline-cookies" class="btn btn-secondary btn-small"><?php esc_html_e('Отказвам', 'tetradkata'); ?></button>
         </div>
     </div>
 </div>
@@ -124,7 +124,7 @@
 <div id="notification-container" class="notification-container"></div>
 
 <!-- Scroll to Top Button -->
-<button id="scroll-to-top" class="scroll-to-top" style="display: none;" aria-label="<?php esc_attr_e('Scroll to top', 'tetradkata'); ?>">
+<button id="scroll-to-top" class="scroll-to-top" style="display: none;" aria-label="<?php esc_attr_e('Към началото', 'tetradkata'); ?>">
     <span class="dashicons dashicons-arrow-up-alt"></span>
 </button>
 

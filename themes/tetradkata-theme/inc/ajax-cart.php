@@ -72,7 +72,7 @@ class Tetradkata_AJAX_Cart {
     private function verify_nonce() {
         if (!isset($_POST['nonce']) || !wp_verify_nonce($_POST['nonce'], 'tetradkata_nonce')) {
             wp_send_json_error(array(
-                'message' => __('Security check failed', 'tetradkata')
+                'message' => __('Неуспешна проверка за сигурност', 'tetradkata')
             ));
             return false;
         }
@@ -84,7 +84,7 @@ class Tetradkata_AJAX_Cart {
      */
     public function ajax_add_to_cart() {
         if (!class_exists('WooCommerce')) {
-            wp_send_json_error(array('message' => __('WooCommerce not active', 'tetradkata')));
+            wp_send_json_error(array('message' => __('WooCommerce не е активен', 'tetradkata')));
             return;
         }
 
@@ -100,23 +100,23 @@ class Tetradkata_AJAX_Cart {
         $quantity = isset($_POST['quantity']) ? absint($_POST['quantity']) : 1;
         
         if (!$product_id) {
-            wp_send_json_error(array('message' => __('Invalid product ID', 'tetradkata')));
+            wp_send_json_error(array('message' => __('Невалиден продукт ID', 'tetradkata')));
             return;
         }
         
         $product = wc_get_product($product_id);
         if (!$product) {
-            wp_send_json_error(array('message' => __('Product not found', 'tetradkata')));
+            wp_send_json_error(array('message' => __('Продуктът не е намерен', 'tetradkata')));
             return;
         }
         
         if (!$product->is_purchasable()) {
-            wp_send_json_error(array('message' => __('This product cannot be purchased', 'tetradkata')));
+            wp_send_json_error(array('message' => __('Този продукт не може да бъде закупен', 'tetradkata')));
             return;
         }
         
         if (!$product->is_in_stock() || ($product->managing_stock() && $product->get_stock_quantity() < $quantity)) {
-            wp_send_json_error(array('message' => __('Insufficient stock', 'tetradkata')));
+            wp_send_json_error(array('message' => __('Недостатъчна наличност', 'tetradkata')));
             return;
         }
         
@@ -131,7 +131,7 @@ class Tetradkata_AJAX_Cart {
                 $cart_total = $this->format_price(WC()->cart->get_total('raw'));
                 
                 wp_send_json_success(array(
-                    'message' => __('Product added to cart successfully', 'tetradkata'),
+                    'message' => __('Продуктът е добавен в количката успешно', 'tetradkata'),
                     'cart_count' => $cart_count,
                     'cart_total' => $cart_total,
                     'cart_item_key' => sanitize_key($cart_item_key),
@@ -142,7 +142,7 @@ class Tetradkata_AJAX_Cart {
                 ));
             } else {
                 $notices = wc_get_notices('error');
-                $error_message = __('Could not add product to cart', 'tetradkata');
+                $error_message = __('Не може да се добави продукта в количката', 'tetradkata');
                 
                 if (!empty($notices)) {
                     $error_message = wp_strip_all_tags($notices[0]['notice']);
@@ -152,7 +152,7 @@ class Tetradkata_AJAX_Cart {
                 wp_send_json_error(array('message' => $error_message));
             }
         } catch (Exception $e) {
-            wp_send_json_error(array('message' => sprintf(__('Error: %s', 'tetradkata'), $e->getMessage())));
+            wp_send_json_error(array('message' => sprintf(__('Грешка: %s', 'tetradkata'), $e->getMessage())));
         }
     }
     
@@ -161,7 +161,7 @@ class Tetradkata_AJAX_Cart {
      */
     public function ajax_get_cart_contents() {
         if (!class_exists('WooCommerce')) {
-            wp_send_json_error(array('message' => __('WooCommerce not active', 'tetradkata')));
+            wp_send_json_error(array('message' => __('WooCommerce не е активен', 'tetradkata')));
             return;
         }
 
@@ -180,9 +180,9 @@ class Tetradkata_AJAX_Cart {
                 $shop_page_url = function_exists('wc_get_page_id') ? get_permalink(wc_get_page_id('shop')) : home_url('/shop');
                 ?>
                 <div class="empty-cart">
-                    <p><?php esc_html_e('Your cart is empty', 'tetradkata'); ?></p>
+                    <p><?php esc_html_e('Количката ви е празна', 'tetradkata'); ?></p>
                     <a href="<?php echo esc_url($shop_page_url); ?>" class="btn btn-primary">
-                        <?php esc_html_e('Continue Shopping', 'tetradkata'); ?>
+                        <?php esc_html_e('Продължи пазаруването', 'tetradkata'); ?>
                     </a>
                 </div>
                 <?php
@@ -222,10 +222,10 @@ class Tetradkata_AJAX_Cart {
                                 </div>
                                 <div class="cart-item-price"><?php echo esc_html($formatted_price); ?></div>
                                 <div class="cart-item-quantity">
-                                    <span><?php echo esc_html(sprintf(__('Quantity: %s', 'tetradkata'), $cart_item['quantity'])); ?></span>
+                                    <span><?php echo esc_html(sprintf(__('Количество: %s', 'tetradkata'), $cart_item['quantity'])); ?></span>
                                     <button class="remove-cart-item" 
                                             data-cart-item-key="<?php echo esc_attr($cart_item_key); ?>"
-                                            title="<?php esc_attr_e('Remove from cart', 'tetradkata'); ?>">
+                                            title="<?php esc_attr_e('Премахни от количката', 'tetradkata'); ?>">
                                         &times;
                                     </button>
                                 </div>
@@ -250,7 +250,7 @@ class Tetradkata_AJAX_Cart {
             ));
             
         } catch (Exception $e) {
-            wp_send_json_error(array('message' => sprintf(__('Error loading cart: %s', 'tetradkata'), $e->getMessage())));
+            wp_send_json_error(array('message' => sprintf(__('Грешка при зареждане на количката: %s', 'tetradkata'), $e->getMessage())));
         }
     }
     
@@ -259,7 +259,7 @@ class Tetradkata_AJAX_Cart {
      */
     public function ajax_remove_cart_item() {
         if (!class_exists('WooCommerce')) {
-            wp_send_json_error(array('message' => __('WooCommerce not active', 'tetradkata')));
+            wp_send_json_error(array('message' => __('WooCommerce не е активен', 'tetradkata')));
             return;
         }
 
@@ -274,7 +274,7 @@ class Tetradkata_AJAX_Cart {
         $cart_item_key = isset($_POST['cart_item_key']) ? sanitize_text_field($_POST['cart_item_key']) : '';
         
         if (!$cart_item_key) {
-            wp_send_json_error(array('message' => __('Invalid cart item', 'tetradkata')));
+            wp_send_json_error(array('message' => __('Невалиден продукт в количката', 'tetradkata')));
             return;
         }
         
@@ -287,16 +287,16 @@ class Tetradkata_AJAX_Cart {
                 $cart_total = $this->format_price(WC()->cart->get_total('raw'));
                 
                 wp_send_json_success(array(
-                    'message' => __('Item removed from cart', 'tetradkata'),
+                    'message' => __('Продуктът е премахнат от количката', 'tetradkata'),
                     'cart_count' => absint(WC()->cart->get_cart_contents_count()),
                     'cart_total' => $cart_total,
                     'is_empty' => WC()->cart->is_empty()
                 ));
             } else {
-                wp_send_json_error(array('message' => __('Could not remove item', 'tetradkata')));
+                wp_send_json_error(array('message' => __('Не може да се премахне продукта', 'tetradkata')));
             }
         } catch (Exception $e) {
-            wp_send_json_error(array('message' => sprintf(__('Error removing item: %s', 'tetradkata'), $e->getMessage())));
+            wp_send_json_error(array('message' => sprintf(__('Грешка при премахване на продукта: %s', 'tetradkata'), $e->getMessage())));
         }
     }
     
@@ -311,14 +311,14 @@ class Tetradkata_AJAX_Cart {
         $product_id = isset($_POST['product_id']) ? absint($_POST['product_id']) : 0;
         
         if (!$product_id) {
-            wp_send_json_error(array('message' => __('Invalid product ID', 'tetradkata')));
+            wp_send_json_error(array('message' => __('Невалиден продукт ID', 'tetradkata')));
             return;
         }
         
         $product = wc_get_product($product_id);
         
         if (!$product) {
-            wp_send_json_error(array('message' => __('Product not found', 'tetradkata')));
+            wp_send_json_error(array('message' => __('Продуктът не е намерен', 'tetradkata')));
             return;
         }
         
@@ -340,19 +340,19 @@ class Tetradkata_AJAX_Cart {
                         <button class="btn btn-primary add-to-cart-btn" 
                                 data-product-id="<?php echo esc_attr($product_id); ?>"
                                 data-product-name="<?php echo esc_attr($product->get_name()); ?>">
-                            <span class="btn-text"><?php esc_html_e('Add to Cart', 'tetradkata'); ?></span>
+                            <span class="btn-text"><?php esc_html_e('Добави в количката', 'tetradkata'); ?></span>
                             <span class="btn-loading" style="display: none;">
-                                <span class="loading"></span> <?php esc_html_e('Adding...', 'tetradkata'); ?>
+                                <span class="loading"></span> <?php esc_html_e('Добавя...', 'tetradkata'); ?>
                             </span>
                         </button>
                         <a href="<?php echo esc_url($product->get_permalink()); ?>" class="btn btn-secondary">
-                            <?php esc_html_e('View Details', 'tetradkata'); ?>
+                            <?php esc_html_e('Виж детайли', 'tetradkata'); ?>
                         </a>
                     </div>
                 <?php else : ?>
                     <div class="quick-view-actions">
                         <a href="<?php echo esc_url($product->get_permalink()); ?>" class="btn btn-primary">
-                            <?php esc_html_e('View Details', 'tetradkata'); ?>
+                            <?php esc_html_e('Виж детайли', 'tetradkata'); ?>
                         </a>
                     </div>
                 <?php endif; ?>
@@ -382,7 +382,7 @@ class Tetradkata_AJAX_Cart {
      * Format price for Bulgarian currency
      */
     private function format_price($price) {
-        return number_format((float)$price, 2, ',', ' ') . ' ' . __('BGN', 'tetradkata');
+        return number_format((float)$price, 2, ',', ' ') . ' ' . __('лв.', 'tetradkata');
     }
 }
 

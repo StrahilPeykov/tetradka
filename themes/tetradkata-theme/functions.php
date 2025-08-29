@@ -46,8 +46,8 @@ function tetradkata_theme_setup() {
     
     // Register navigation menus
     register_nav_menus(array(
-        'primary' => __('Primary Menu', 'tetradkata'),
-        'footer'  => __('Footer Menu', 'tetradkata'),
+        'primary' => __('Основно меню', 'tetradkata'),
+        'footer'  => __('Меню в долния колонтитул', 'tetradkata'),
     ));
 }
 add_action('after_setup_theme', 'tetradkata_theme_setup');
@@ -89,14 +89,14 @@ function tetradkata_scripts() {
         'shop_url' => class_exists('WooCommerce') ? esc_url(get_permalink(wc_get_page_id('shop'))) : '',
         'wc_active' => class_exists('WooCommerce') ? 'yes' : 'no',
         'translations' => array(
-            'loading' => __('Loading...', 'tetradkata'),
-            'error' => __('An error occurred', 'tetradkata'),
-            'added_to_cart' => __('Product added to cart!', 'tetradkata'),
-            'removed_from_cart' => __('Product removed from cart', 'tetradkata'),
-            'cart_empty' => __('Your cart is empty', 'tetradkata'),
-            'continue_shopping' => __('Continue Shopping', 'tetradkata'),
-            'checkout' => __('Checkout', 'tetradkata'),
-            'view_cart' => __('View Cart', 'tetradkata'),
+            'loading' => __('Зарежда...', 'tetradkata'),
+            'error' => __('Възникна грешка', 'tetradkata'),
+            'added_to_cart' => __('Продуктът е добавен в количката!', 'tetradkata'),
+            'removed_from_cart' => __('Продуктът е премахнат от количката', 'tetradkata'),
+            'cart_empty' => __('Количката ви е празна', 'tetradkata'),
+            'continue_shopping' => __('Продължи пазаруването', 'tetradkata'),
+            'checkout' => __('Плащане', 'tetradkata'),
+            'view_cart' => __('Виж количката', 'tetradkata'),
         ),
     ));
 }
@@ -121,7 +121,7 @@ add_action('init', 'tetradkata_load_translations');
 function tetradkata_add_checkout_fields($fields) {
     // Add Bulgarian-specific fields if needed
     $fields['billing']['billing_company_vat'] = array(
-        'label'    => __('VAT Number (for invoice)', 'tetradkata'),
+        'label'    => __('ЕИК/БУЛСТАТ (за фактура)', 'tetradkata'),
         'required' => false,
         'class'    => array('form-row-wide'),
         'clear'    => true,
@@ -154,9 +154,9 @@ if (class_exists('WooCommerce')) {
  */
 function tetradkata_widgets_init() {
     register_sidebar(array(
-        'name'          => __('Footer Widget Area 1', 'tetradkata'),
+        'name'          => __('Област за джаджи в долния колонтитул 1', 'tetradkata'),
         'id'            => 'footer-1',
-        'description'   => __('Add widgets here to appear in your footer.', 'tetradkata'),
+        'description'   => __('Добавете джаджи тук, за да се появят в долния колонтитул.', 'tetradkata'),
         'before_widget' => '<div class="widget %2$s">',
         'after_widget'  => '</div>',
         'before_title'  => '<h3 class="widget-title">',
@@ -164,9 +164,9 @@ function tetradkata_widgets_init() {
     ));
     
     register_sidebar(array(
-        'name'          => __('Footer Widget Area 2', 'tetradkata'),
+        'name'          => __('Област за джаджи в долния колонтитул 2', 'tetradkata'),
         'id'            => 'footer-2',
-        'description'   => __('Add widgets here to appear in your footer.', 'tetradkata'),
+        'description'   => __('Добавете джаджи тук, за да се появят в долния колонтитул.', 'tetradkata'),
         'before_widget' => '<div class="widget %2$s">',
         'after_widget'  => '</div>',
         'before_title'  => '<h3 class="widget-title">',
@@ -174,9 +174,9 @@ function tetradkata_widgets_init() {
     ));
     
     register_sidebar(array(
-        'name'          => __('Footer Widget Area 3', 'tetradkata'),
+        'name'          => __('Област за джаджи в долния колонтитул 3', 'tetradkata'),
         'id'            => 'footer-3',
-        'description'   => __('Add widgets here to appear in your footer.', 'tetradkata'),
+        'description'   => __('Добавете джаджи тук, за да се появят в долния колонтитул.', 'tetradkata'),
         'before_widget' => '<div class="widget %2$s">',
         'after_widget'  => '</div>',
         'before_title'  => '<h3 class="widget-title">',
@@ -290,7 +290,7 @@ add_filter('body_class', 'tetradkata_body_classes');
  */
 function tetradkata_add_to_cart_button($product, $classes = 'btn btn-primary', $text = '') {
     if (empty($text)) {
-        $text = __('Add to Cart', 'tetradkata');
+        $text = __('Добави в количката', 'tetradkata');
     }
     
     if (!$product || !$product->is_purchasable()) {
@@ -311,7 +311,7 @@ function tetradkata_add_to_cart_button($product, $classes = 'btn btn-primary', $
             <span class="btn-text"><?php echo esc_html($text); ?></span>
             <span class="btn-loading" style="display: none;">
                 <span class="loading"></span>
-                <span><?php esc_html_e('Adding...', 'tetradkata'); ?></span>
+                <span><?php esc_html_e('Добавя...', 'tetradkata'); ?></span>
             </span>
         </button>
         <?php
@@ -319,7 +319,7 @@ function tetradkata_add_to_cart_button($product, $classes = 'btn btn-primary', $
         ?>
         <a href="<?php echo esc_url($product->get_permalink()); ?>" 
            class="<?php echo esc_attr(str_replace('btn-primary', 'btn-secondary', $classes)); ?>">
-            <?php esc_html_e('View Details', 'tetradkata'); ?>
+            <?php esc_html_e('Виж детайли', 'tetradkata'); ?>
         </a>
         <?php
     }
@@ -343,9 +343,9 @@ add_action('init', 'tetradkata_remove_checkout_notices');
  */
 function tetradkata_payment_gateway_titles($title, $gateway_id) {
     $titles = array(
-        'cod' => __('Cash on Delivery', 'tetradkata'),
-        'bacs' => __('Bank Transfer', 'tetradkata'),
-        'viva' => __('Credit Card Payment (Viva.com)', 'tetradkata'),
+        'cod' => __('Наложен платеж', 'tetradkata'),
+        'bacs' => __('Банков превод', 'tetradkata'),
+        'viva' => __('Плащане с кредитна карта (Viva.com)', 'tetradkata'),
     );
     
     return isset($titles[$gateway_id]) ? $titles[$gateway_id] : $title;
@@ -357,9 +357,9 @@ add_filter('woocommerce_gateway_title', 'tetradkata_payment_gateway_titles', 10,
  */
 function tetradkata_payment_gateway_descriptions($description, $gateway_id) {
     $descriptions = array(
-        'cod' => __('Pay with cash upon delivery.', 'tetradkata'),
-        'bacs' => __('Make a direct bank transfer. Order will be processed after payment is received.', 'tetradkata'),
-        'viva' => __('Pay securely with credit card via Viva.com. We accept all major credit cards.', 'tetradkata'),
+        'cod' => __('Плащане в брой при доставка.', 'tetradkata'),
+        'bacs' => __('Направете директен банков превод. Поръчката ще бъде обработена след получаване на плащането.', 'tetradkata'),
+        'viva' => __('Платете сигурно с кредитна карта чрез Viva.com. Приемаме всички основни кредитни карти.', 'tetradkata'),
     );
     
     return isset($descriptions[$gateway_id]) ? $descriptions[$gateway_id] : $description;
@@ -373,7 +373,7 @@ function tetradkata_checkout_privacy_policy_text($text) {
     $privacy_url = get_privacy_policy_url();
     if ($privacy_url) {
         return sprintf(
-            __('Your personal data will be used to process your order and improve your experience on this website. Read our <a href="%s" target="_blank">privacy policy</a>.', 'tetradkata'),
+            __('Вашите лични данни ще бъдат използвани за обработка на поръчката и подобряване на вашето изживяване в този уебсайт. Прочетете нашата <a href="%s" target="_blank">политика за поверителност</a>.', 'tetradkata'),
             esc_url($privacy_url)
         );
     }
@@ -406,7 +406,7 @@ function tetradkata_display_order_item_personalization($item_id, $item, $order) 
         
         if ($personalization_enabled === 'yes' && $personalization_name) {
             echo '<div class="personalization-info" style="margin-top: 10px; padding: 10px; background: #f5f5f5; border-radius: 5px;">';
-            echo '<strong>' . esc_html__('Personalization:', 'tetradkata') . '</strong> ' . esc_html($personalization_name);
+            echo '<strong>' . esc_html__('Персонализация:', 'tetradkata') . '</strong> ' . esc_html($personalization_name);
             echo '</div>';
         }
     }
@@ -418,8 +418,8 @@ add_action('woocommerce_order_item_meta_end', 'tetradkata_display_order_item_per
  */
 function tetradkata_add_theme_options() {
     add_theme_page(
-        __('Tetradkata Options', 'tetradkata'),
-        __('Theme Options', 'tetradkata'),
+        __('Настройки на Тетрадката', 'tetradkata'),
+        __('Настройки на темата', 'tetradkata'),
         'manage_options',
         'tetradkata-options',
         'tetradkata_theme_options_page'

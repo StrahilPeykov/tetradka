@@ -321,7 +321,7 @@
         
         if (!productId) {
             console.error('No product ID found');
-            showNotification(config.translations.error || 'Error', 'error');
+            showNotification(config.translations.error || 'Грешка', 'error');
             return;
         }
         
@@ -342,7 +342,7 @@
                 if (response.success) {
                     updateCartCount(response.data.cart_count);
                     showNotification(
-                        config.translations.added_to_cart || 'Product added to cart!',
+                        config.translations.added_to_cart || 'Продуктът е добавен в количката!',
                         'success'
                     );
                     setButtonState($button, 'success');
@@ -355,14 +355,14 @@
                     });
                 } else {
                     showNotification(
-                        response.data?.message || config.translations.error || 'Error',
+                        response.data?.message || config.translations.error || 'Грешка',
                         'error'
                     );
                     setButtonState($button, 'default');
                 }
             },
             error: function() {
-                showNotification(config.translations.error || 'Error', 'error');
+                showNotification(config.translations.error || 'Грешка', 'error');
                 setButtonState($button, 'default');
             }
         });
@@ -397,18 +397,18 @@
                     loadCartContents();
                     updateCartCount(response.data.cart_count);
                     showNotification(
-                        config.translations.removed_from_cart || 'Product removed from cart',
+                        config.translations.removed_from_cart || 'Продуктът е премахнат от количката',
                         'success'
                     );
                 } else {
                     showNotification(
-                        response.data?.message || config.translations.error || 'Error',
+                        response.data?.message || config.translations.error || 'Грешка',
                         'error'
                     );
                 }
             },
             error: function() {
-                showNotification(config.translations.error || 'Error', 'error');
+                showNotification(config.translations.error || 'Грешка', 'error');
             },
             complete: function() {
                 $button.prop('disabled', false);
@@ -464,7 +464,7 @@
         
         const $cartItems = $('.cart-items');
         $cartItems.html('<div class="loading-cart"><div class="loading"></div><p>' + 
-                        (config.translations.loading || 'Loading...') + '</p></div>');
+                        (config.translations.loading || 'Зарежда...') + '</p></div>');
         
         $.ajax({
             url: config.ajaxUrl,
@@ -487,12 +487,12 @@
                     }
                 } else {
                     $cartItems.html('<div class="cart-error">' + 
-                                  (config.translations.error || 'Error loading cart') + '</div>');
+                                  (config.translations.error || 'Грешка при зареждане на количката') + '</div>');
                 }
             },
             error: function() {
                 $cartItems.html('<div class="cart-error">' + 
-                              (config.translations.error || 'Error loading cart') + '</div>');
+                              (config.translations.error || 'Грешка при зареждане на количката') + '</div>');
             },
             complete: function() {
                 state.cartLoading = false;
@@ -549,11 +549,11 @@
                 if (response.success) {
                     $content.html(response.data.html);
                 } else {
-                    $content.html('<p>' + (config.translations.error || 'Error') + '</p>');
+                    $content.html('<p>' + (config.translations.error || 'Грешка') + '</p>');
                 }
             },
             error: function() {
-                $content.html('<p>' + (config.translations.error || 'Error') + '</p>');
+                $content.html('<p>' + (config.translations.error || 'Грешка') + '</p>');
             }
         });
     }
@@ -641,7 +641,7 @@
             
             if (!isValid) {
                 e.preventDefault();
-                showNotification('Please fill in all required fields correctly.', 'error');
+                showNotification('Моля, попълнете всички задължителни полета правилно.', 'error');
             }
         });
         
@@ -796,14 +796,14 @@
                 $button.find('.btn-text').hide();
                 if ($button.find('.btn-loading').length === 0) {
                     $button.append('<span class="btn-loading"><span class="loading"></span> ' + 
-                                 (config.translations.loading || 'Loading...') + '</span>');
+                                 (config.translations.loading || 'Зарежда...') + '</span>');
                 }
                 $button.find('.btn-loading').show();
                 break;
                 
             case 'success':
                 $button.removeClass('processing').addClass('success').prop('disabled', false);
-                $button.find('.btn-text').text('✓ ' + (config.translations.added || 'Added')).show();
+                $button.find('.btn-text').text('✓ ' + (config.translations.added || 'Добавено')).show();
                 $button.find('.btn-loading').hide();
                 
                 setTimeout(function() {
