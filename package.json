@@ -1,6 +1,6 @@
 {
   "name": "tetradkata-theme-deployment",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "description": "Deployment tools for Tetradkata WordPress theme",
   "main": "deploy.js",
   "scripts": {
@@ -9,7 +9,25 @@
     "deploy:dry-run": "node deploy.js --dry-run",
     "deploy:verbose": "node deploy.js --verbose",
     "test-connection": "node test-ftp.js",
-    "setup": "npm install"
+    "setup": "npm install && npm run setup:env",
+    "setup:env": "[ ! -f .env ] && cp .env.example .env || echo '.env already exists'",
+    "lint": "npm run lint:js && npm run lint:css && npm run lint:php",
+    "lint:js": "eslint themes/tetradkata-theme/**/*.js",
+    "lint:css": "stylelint themes/tetradkata-theme/**/*.css",
+    "lint:php": "find themes/tetradkata-theme -name '*.php' -exec php -l {} \\;",
+    "test": "npm run test-connection && npm run lint",
+    "security-check": "npm audit && node scripts/security-check.js",
+    "build": "npm run build:css && npm run build:js",
+    "build:css": "postcss themes/tetradkata-theme/style.css -o themes/tetradkata-theme/style.min.css",
+    "build:js": "terser themes/tetradkata-theme/assets/js/scripts.js -o themes/tetradkata-theme/assets/js/scripts.min.js",
+    "watch": "npm-run-all --parallel watch:*",
+    "watch:css": "chokidar 'themes/tetradkata-theme/**/*.css' -c 'npm run build:css'",
+    "watch:js": "chokidar 'themes/tetradkata-theme/**/*.js' -c 'npm run build:js'",
+    "clean": "rm -rf node_modules package-lock.json",
+    "reinstall": "npm run clean && npm install",
+    "version:patch": "npm version patch",
+    "version:minor": "npm version minor",
+    "version:major": "npm version major"
   },
   "repository": {
     "type": "git",
@@ -19,17 +37,60 @@
     "wordpress",
     "theme",
     "deployment",
-    "tetradkata"
+    "tetradkata",
+    "woocommerce",
+    "ecommerce"
   ],
   "author": "Your Name",
-  "license": "MIT",
+  "license": "GPL-3.0",
   "dependencies": {
     "basic-ftp": "^5.0.4",
     "chalk": "^4.1.2",
+    "dotenv": "^16.3.1",
     "glob": "^10.3.10",
     "minimist": "^1.2.8"
   },
+  "devDependencies": {
+    "chokidar-cli": "^3.0.0",
+    "eslint": "^8.52.0",
+    "npm-run-all": "^4.1.5",
+    "postcss": "^8.4.31",
+    "postcss-cli": "^10.1.0",
+    "stylelint": "^15.11.0",
+    "stylelint-config-standard": "^34.0.0",
+    "terser": "^5.24.0"
+  },
   "engines": {
-    "node": ">=14.0.0"
-  }
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ],
+  "eslintConfig": {
+    "env": {
+      "browser": true,
+      "es2021": true,
+      "jquery": true
+    },
+    "extends": "eslint:recommended",
+    "parserOptions": {
+      "ecmaVersion": 12,
+      "sourceType": "module"
+    },
+    "rules": {
+      "no-console": "warn",
+      "no-unused-vars": "warn"
+    }
+  },
+  "stylelint": {
+    "extends": "stylelint-config-standard",
+    "rules": {
+      "selector-class-pattern": null,
+      "selector-id-pattern": null
+    }
+  },
+  "private": true
 }

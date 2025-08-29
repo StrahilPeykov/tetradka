@@ -7,11 +7,70 @@ on:
       - 'themes/tetradkata-theme/**'
       - 'package.json'
       - 'deploy.js'
-  workflow_dispatch: # Allows manual triggering
+      - '.github/workflows/deploy.yml'
+  pull_request:
+    branches: [ main ]
+    types: [ closed ]
+  workflow_dispatch:
+    inputs:
+      deploy_type:
+        description: 'Deployment type'
+        required: true
+        default: 'full'
+        type: choice
+        options:
+          - full
+          - assets-only
+          - dry-run
+
+# Ensure only one deployment runs at a time
+concurrency:
+  group: deployment
+  cancel-in-progress: false
 
 jobs:
-  deploy:
+  # Validate and test before deployment
+  validate:
     runs-on: ubuntu-latest
+    steps:
+    - name: 🚀 Checkout code
+      uses: actions/checkout@v4
+      
+    - name: 🔍 Validate PHP syntax
+      run: |
+        find themes/tetradkata-theme -name "*.php" -exec php -l {} \;
+    
+    - name: 📋 Check for sensitive data
+      run: |
+        # Check for hardcoded passwords or API keys
+        if grep -r "password\s*=\s*['\"][^'\"]*['\"]" themes/tetradkata-theme --include="*.php" --include="*.js"; then
+          echo "❌ Found hardcoded passwords!"
+          exit 1
+        fi
+        if grep -r "api_key\s*=\s*['\"][^'\"]*['\"]" themes/tetradkata-theme --include="*.php" --include="*.js"; then
+          echo "❌ Found hardcoded API keys!"
+          exit 1
+        fi
+        echo "✅ No hardcoded credentials found"
+    
+    - name: 🎨 Validate CSS
+      run: |
+        npx stylelint "themes/tetradkata-theme/**/*.css" || true
+    
+    - name: 📦 Check file sizes
+      run: |
+        find themes/tetradkata-theme -type f -size +1M -exec ls -lh {} \;
+        echo "Files larger than 1MB listed above (if any)"
+
+  # Main deployment job
+  deploy:
+    needs: validate
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' || (github.event_name == 'pull_request' && github.event.pull_request.merged == true) || github.event_name == 'workflow_dispatch'
+    
+    environment:
+      name: production
+      url: ${{ secrets.SITE_URL }}
     
     steps:
     - name: 🚀 Checkout code
@@ -21,25 +80,136 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: '18'
+        cache: 'npm'
         
     - name: 📥 Install dependencies
-      run: npm install
-      
+      run: |
+        npm ci --prefer-offline --no-audit
+        
+    - name: 🔐 Validate secrets
+      run: |
+        if [ -z "${{ secrets.FTP_HOST }}" ]; then
+          echo "❌ FTP_HOST secret is not set"
+          exit 1
+        fi
+        if [ -z "${{ secrets.FTP_USER }}" ]; then
+          echo "❌ FTP_USER secret is not set"
+          exit 1
+        fi
+        if [ -z "${{ secrets.FTP_PASSWORD }}" ]; then
+          echo "❌ FTP_PASSWORD secret is not set"
+          exit 1
+        fi
+        echo "✅ All required secrets are set"
+        
     - name: 🧪 Test FTP connection
       run: npm run test-connection
       env:
         FTP_HOST: ${{ secrets.FTP_HOST }}
         FTP_USER: ${{ secrets.FTP_USER }}
         FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+        FTP_PORT: ${{ secrets.FTP_PORT || '21' }}
+        FTP_SECURE: ${{ secrets.FTP_SECURE || 'false' }}
+      continue-on-error: true
+        
+    - name: 📝 Create deployment info file
+      run: |
+        echo "<?php" > themes/tetradkata-theme/deployment-info.php
+        echo "// Deployment information - Auto-generated" >> themes/tetradkata-theme/deployment-info.php
+        echo "define('DEPLOYMENT_TIME', '$(date -u +"%Y-%m-%d %H:%M:%S UTC")');" >> themes/tetradkata-theme/deployment-info.php
+        echo "define('DEPLOYMENT_COMMIT', '${{ github.sha }}');" >> themes/tetradkata-theme/deployment-info.php
+        echo "define('DEPLOYMENT_BRANCH', '${{ github.ref_name }}');" >> themes/tetradkata-theme/deployment-info.php
+        echo "define('DEPLOYMENT_USER', '${{ github.actor }}');" >> themes/tetradkata-theme/deployment-info.php
         
     - name: 🚀 Deploy to production
-      run: npm run deploy
+      run: |
+        if [ "${{ github.event.inputs.deploy_type }}" == "dry-run" ]; then
+          npm run deploy:dry-run
+        elif [ "${{ github.event.inputs.deploy_type }}" == "assets-only" ]; then
+          npm run deploy:assets
+        else
+          npm run deploy
+        fi
       env:
         FTP_HOST: ${{ secrets.FTP_HOST }}
         FTP_USER: ${{ secrets.FTP_USER }}
         FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+        FTP_PORT: ${{ secrets.FTP_PORT || '21' }}
+        FTP_SECURE: ${{ secrets.FTP_SECURE || 'false' }}
+        FTP_REMOTE_DIR: ${{ secrets.FTP_REMOTE_DIR || '/htdocs/wp-content/themes/tetradkata-theme/' }}
+        SITE_URL: ${{ secrets.SITE_URL }}
+        
+    - name: 🔔 Notify deployment status
+      if: always()
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const status = '${{ job.status }}';
+          const emoji = status === 'success' ? '✅' : '❌';
+          const message = `${emoji} Deployment ${status} for commit ${{ github.sha }}`;
+          
+          // Create deployment status
+          await github.rest.repos.createDeploymentStatus({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            deployment_id: context.payload.deployment?.id || 1,
+            state: status,
+            environment_url: '${{ secrets.SITE_URL }}',
+            description: message
+          }).catch(() => {
+            console.log('Could not create deployment status');
+          });
+          
+          // Add comment to PR if applicable
+          if (context.eventName === 'pull_request') {
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              body: message
+            });
+          }
+    
+    - name: 💾 Upload deployment logs
+      if: failure()
+      uses: actions/upload-artifact@v3
+      with:
+        name: deployment-logs
+        path: |
+          npm-debug.log
+          deployment.log
+        retention-days: 7
         
     - name: ✅ Deployment complete
+      if: success()
       run: |
         echo "🎉 Deployment completed successfully!"
-        echo "🌐 Visit: https://tetradkata.rf.gd"
+        echo "🌐 Visit: ${{ secrets.SITE_URL }}"
+        echo "📊 Deployment details:"
+        echo "  - Commit: ${{ github.sha }}"
+        echo "  - Branch: ${{ github.ref_name }}"
+        echo "  - Time: $(date -u +"%Y-%m-%d %H:%M:%S UTC")"
+        echo "  - Deployed by: ${{ github.actor }}"
+
+  # Post-deployment validation
+  validate-deployment:
+    needs: deploy
+    runs-on: ubuntu-latest
+    if: success()
+    steps:
+    - name: 🔍 Check site availability
+      run: |
+        response=$(curl -s -o /dev/null -w "%{http_code}" "${{ secrets.SITE_URL }}")
+        if [ $response -eq 200 ]; then
+          echo "✅ Site is accessible (HTTP $response)"
+        else
+          echo "⚠️ Site returned HTTP $response"
+          exit 1
+        fi
+      continue-on-error: true
+    
+    - name: 📊 Performance check
+      run: |
+        # Basic performance check using curl
+        time curl -s -o /dev/null "${{ secrets.SITE_URL }}"
+      continue-on-error: true

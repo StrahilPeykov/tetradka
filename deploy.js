@@ -10,16 +10,31 @@ const minimist = require('minimist');
 // Parse command line arguments
 const args = minimist(process.argv.slice(2));
 
-// Configuration - supports environment variables for CI/CD
+// Validate environment variables
+if (!process.env.FTP_HOST || !process.env.FTP_USER || !process.env.FTP_PASSWORD) {
+    console.error(chalk.red('❌ Missing required environment variables:'));
+    if (!process.env.FTP_HOST) console.error(chalk.red('   - FTP_HOST'));
+    if (!process.env.FTP_USER) console.error(chalk.red('   - FTP_USER'));
+    if (!process.env.FTP_PASSWORD) console.error(chalk.red('   - FTP_PASSWORD'));
+    console.error(chalk.yellow('\n💡 Set environment variables before running:'));
+    console.error(chalk.yellow('   export FTP_HOST=your-host'));
+    console.error(chalk.yellow('   export FTP_USER=your-username'));
+    console.error(chalk.yellow('   export FTP_PASSWORD=your-password'));
+    console.error(chalk.yellow('   npm run deploy\n'));
+    process.exit(1);
+}
+
+// Configuration - uses environment variables only
 const config = {
-    host: process.env.FTP_HOST || 'ftpupload.net',
-    user: process.env.FTP_USER || 'if0_39618140',
+    host: process.env.FTP_HOST,
+    user: process.env.FTP_USER,
     password: process.env.FTP_PASSWORD,
-    secure: false,
+    secure: process.env.FTP_SECURE === 'true' || false,
+    port: process.env.FTP_PORT ? parseInt(process.env.FTP_PORT) : 21,
     
     // Paths for wp-content level repo
     themeLocalDir: './themes/tetradkata-theme/',
-    themeRemoteDir: '/htdocs/wp-content/themes/tetradkata-theme/',
+    themeRemoteDir: process.env.FTP_REMOTE_DIR || '/htdocs/wp-content/themes/tetradkata-theme/',
     
     // Deployment options from command line
     dryRun: args['dry-run'] || false,
@@ -67,7 +82,10 @@ function getThemeFiles() {
         'themes/tetradkata-theme/**/*.woff',
         'themes/tetradkata-theme/**/*.woff2',
         'themes/tetradkata-theme/**/*.ttf',
-        'themes/tetradkata-theme/**/*.eot'
+        'themes/tetradkata-theme/**/*.eot',
+        'themes/tetradkata-theme/**/*.mo',
+        'themes/tetradkata-theme/**/*.po',
+        'themes/tetradkata-theme/**/*.pot'
     ];
     
     let files = [];
@@ -78,7 +96,9 @@ function getThemeFiles() {
                 '**/.git/**',
                 '**/*.map',
                 '**/.DS_Store',
-                '**/.gitkeep'
+                '**/.gitkeep',
+                '**/test-*.js',  // Exclude test files
+                '**/.env*'       // Exclude environment files
             ]
         });
         files = files.concat(matches);
@@ -102,7 +122,8 @@ function getAssetFiles() {
                 '**/node_modules/**',
                 '**/.git/**',
                 '**/*.map',
-                '**/.DS_Store'
+                '**/.DS_Store',
+                '**/test-*.js'
             ]
         });
         files = files.concat(matches);
@@ -208,9 +229,13 @@ async function deploy() {
     
     try {
         log.info('Connecting to FTP server...');
+        log.verbose(`Host: ${config.host}:${config.port}`);
+        log.verbose(`User: ${config.user}`);
+        log.verbose(`Secure: ${config.secure}`);
         
         await client.access({
             host: config.host,
+            port: config.port,
             user: config.user,
             password: config.password,
             secure: config.secure
@@ -223,7 +248,7 @@ async function deploy() {
         
         if (themeSuccess) {
             log.success('🎉 Deployment completed successfully!');
-            log.info(`Visit your site: ${chalk.underline('https://tetradkata.rf.gd')}`);
+            log.info(`Visit your site: ${chalk.underline(process.env.SITE_URL || 'https://your-site.com')}`);
             
             if (config.isCI) {
                 log.ci('Automatic deployment completed');
@@ -262,15 +287,17 @@ async function testConnection() {
     try {
         await client.access({
             host: config.host,
+            port: config.port,
             user: config.user,
             password: config.password,
             secure: config.secure
         });
         
         log.success('FTP connection successful!');
+        log.info(`Connected to: ${config.host}`);
         
         // Test remote directory access
-        await client.cd('/htdocs/wp-content/themes/');
+        await client.cd(path.dirname(config.themeRemoteDir));
         log.success('Remote theme directory accessible');
         
         if (config.isCI) {
@@ -300,15 +327,25 @@ ${chalk.bold('Usage:')}
   npm run deploy:verbose            Deploy with detailed output
   npm run test-connection           Test FTP connection
 
-${chalk.bold('Environment Variables:')}
+${chalk.bold('Environment Variables (Required):')}
   FTP_HOST                          FTP server hostname
   FTP_USER                          FTP username
   FTP_PASSWORD                      FTP password
+  
+${chalk.bold('Environment Variables (Optional):')}
+  FTP_PORT                          FTP port (default: 21)
+  FTP_SECURE                        Use FTPS (default: false)
+  FTP_REMOTE_DIR                    Remote directory path
+  SITE_URL                          Your website URL
 
 ${chalk.bold('Examples:')}
+  FTP_HOST=ftp.example.com FTP_USER=user FTP_PASSWORD=pass npm run deploy
   npm run deploy:dry-run            Preview deployment
   npm run deploy:assets             Deploy only CSS/JS changes
-  FTP_HOST=custom.host npm run deploy    Use custom FTP settings
+  
+${chalk.bold('Security Note:')}
+  Never commit credentials to version control!
+  Use environment variables or .env files (git-ignored)
 `);
 }
 
