@@ -92,10 +92,28 @@
         const $menuToggle = $('.menu-toggle');
         const $navMenu = $('.nav-menu');
         
-        $menuToggle.on('click', function() {
+        $menuToggle.on('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
             $(this).toggleClass('active');
             $navMenu.toggleClass('active');
             $(this).attr('aria-expanded', $(this).hasClass('active'));
+            
+            // Prevent body scroll when menu is open
+            if ($(this).hasClass('active')) {
+                $('body').addClass('mobile-menu-open');
+            } else {
+                $('body').removeClass('mobile-menu-open');
+            }
+        });
+        
+        // Close menu on navigation link click
+        $navMenu.find('a').on('click', function() {
+            $menuToggle.removeClass('active');
+            $navMenu.removeClass('active');
+            $menuToggle.attr('aria-expanded', 'false');
+            $('body').removeClass('mobile-menu-open');
         });
         
         // Close menu on outside click
@@ -104,6 +122,27 @@
                 $menuToggle.removeClass('active');
                 $navMenu.removeClass('active');
                 $menuToggle.attr('aria-expanded', 'false');
+                $('body').removeClass('mobile-menu-open');
+            }
+        });
+        
+        // Close menu on escape key
+        $(document).on('keydown', function(e) {
+            if (e.key === 'Escape' && $navMenu.hasClass('active')) {
+                $menuToggle.removeClass('active');
+                $navMenu.removeClass('active');
+                $menuToggle.attr('aria-expanded', 'false');
+                $('body').removeClass('mobile-menu-open');
+            }
+        });
+        
+        // Handle window resize
+        $(window).on('resize', function() {
+            if ($(window).width() > 768) {
+                $menuToggle.removeClass('active');
+                $navMenu.removeClass('active');
+                $menuToggle.attr('aria-expanded', 'false');
+                $('body').removeClass('mobile-menu-open');
             }
         });
     }
