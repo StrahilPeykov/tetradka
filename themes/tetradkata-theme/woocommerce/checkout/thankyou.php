@@ -1,7 +1,6 @@
 <?php
 /**
  * Order Received (Thank You) Page Template
- * Create as: themes/tetradkata-theme/woocommerce/checkout/thankyou.php
  * 
  * @package TetradkataTheme
  */
