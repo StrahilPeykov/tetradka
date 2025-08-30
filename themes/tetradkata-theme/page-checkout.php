@@ -1,32 +1,34 @@
 <?php
 /**
- * Checkout Page Template
+ * Checkout Page Template - Updated for Unified Experience
  * 
  * @package TetradkataTheme
  */
 
 get_header(); ?>
 
-<div class="checkout-container">
+<div class="checkout-flow-container">
     <div class="container">
+        <!-- Unified Step Header -->
         <div class="checkout-header">
             <div class="checkout-steps">
-                <div class="step active">
-                    <span class="step-number">1</span>
+                <div class="step completed clickable" data-step="1" data-url="<?php echo esc_url(wc_get_cart_url()); ?>">
+                    <span class="step-number">✓</span>
                     <span class="step-title">Количка</span>
                 </div>
-                <div class="step-line"></div>
-                <div class="step active">
+                <div class="step-line completed"></div>
+                <div class="step active" data-step="2">
                     <span class="step-number">2</span>
-                    <span class="step-title">Доставка</span>
+                    <span class="step-title">Плащане</span>
                 </div>
                 <div class="step-line"></div>
-                <div class="step">
+                <div class="step" data-step="3">
                     <span class="step-number">3</span>
                     <span class="step-title">Завършено</span>
                 </div>
             </div>
             <h1>Завършване на поръчката</h1>
+            <p class="step-description">Въведете данните си за доставка и изберете начин на плащане</p>
         </div>
 
         <div class="checkout-content">
@@ -50,11 +52,23 @@ get_header(); ?>
                             <div class="checkout-layout">
                                 <div class="checkout-main">
                                     
+                                    <!-- Progress Indicator -->
+                                    <div class="checkout-progress">
+                                        <div class="progress-item completed">
+                                            <span class="progress-icon">✓</span>
+                                            <span class="progress-text">Количка прегледана</span>
+                                        </div>
+                                        <div class="progress-item active">
+                                            <span class="progress-icon">2</span>
+                                            <span class="progress-text">Въвеждане на данни</span>
+                                        </div>
+                                    </div>
+                                    
                                     <!-- Coupon Code Section -->
                                     <?php if (wc_coupons_enabled()) : ?>
                                         <div class="checkout-section coupon-section">
                                             <h3 class="section-title">
-                                                <span class="icon">🎟️</span>
+                                                <span class="icon">🎫</span>
                                                 Код за отстъпка
                                             </h3>
                                             
@@ -103,6 +117,7 @@ get_header(); ?>
                                         
                                         <div class="shipping-methods">
                                             <?php if (WC()->cart->needs_shipping() && WC()->cart->show_shipping()) : ?>
+                                                <h4>Избор на доставка:</h4>
                                                 <?php do_action('woocommerce_review_order_before_shipping'); ?>
                                                 <?php wc_cart_totals_shipping_html(); ?>
                                                 <?php do_action('woocommerce_review_order_after_shipping'); ?>
@@ -173,10 +188,16 @@ get_header(); ?>
 
                                 <div class="checkout-sidebar">
                                     <div class="order-summary sticky-summary">
-                                        <h3 class="section-title">
-                                            <span class="icon">🛒</span>
-                                            Вашата поръчка
-                                        </h3>
+                                        <div class="section-header">
+                                            <h3>
+                                                <span class="section-icon">📋</span>
+                                                Вашата поръчка
+                                            </h3>
+                                            <button type="button" class="edit-cart-btn" onclick="window.location.href='<?php echo esc_url(wc_get_cart_url()); ?>'" title="Редактиraj количката">
+                                                <span class="dashicons dashicons-edit"></span>
+                                                Редактирай
+                                            </button>
+                                        </div>
                                         
                                         <?php do_action('woocommerce_checkout_before_order_review'); ?>
 
@@ -209,7 +230,7 @@ get_header(); ?>
                     </div>
                     <?php
                 } else {
-                    // Empty cart
+                    // Empty cart - redirect to shop
                     ?>
                     <div class="empty-checkout">
                         <div class="empty-checkout-content">
@@ -217,10 +238,18 @@ get_header(); ?>
                             <h2>Количката ви е празна</h2>
                             <p>Добавете продукти в количката, за да продължите с поръчката.</p>
                             <a href="<?php echo get_permalink(wc_get_page_id('shop')); ?>" class="btn btn-primary">
+                                <span class="dashicons dashicons-cart"></span>
                                 Към магазина
                             </a>
                         </div>
                     </div>
+                    
+                    <script>
+                    // Auto-redirect to shop if cart is empty
+                    setTimeout(function() {
+                        window.location.href = '<?php echo esc_url(get_permalink(wc_get_page_id('shop'))); ?>';
+                    }, 3000);
+                    </script>
                     <?php
                 }
             } else {
@@ -239,14 +268,14 @@ get_header(); ?>
 </div>
 
 <style>
-/* Modern Checkout Design */
-.checkout-container {
+/* Unified Checkout Flow Design */
+.checkout-flow-container {
     background: #fafafa;
     padding: 100px 0 60px;
     min-height: calc(100vh - 200px);
 }
 
-/* Checkout Header with Steps */
+/* Step Header */
 .checkout-header {
     text-align: center;
     margin-bottom: 50px;
@@ -268,11 +297,30 @@ get_header(); ?>
     align-items: center;
     gap: 10px;
     opacity: 0.5;
-    transition: opacity 0.3s ease;
+    transition: all 0.3s ease;
+    padding: 8px 12px;
+    border-radius: 10px;
+    cursor: default;
+    position: relative;
 }
 
 .step.active {
     opacity: 1;
+    background: rgba(182, 129, 58, 0.1);
+}
+
+.step.completed {
+    opacity: 1;
+    background: rgba(34, 197, 94, 0.1);
+}
+
+.step.clickable {
+    cursor: pointer;
+}
+
+.step.clickable:hover {
+    background: rgba(182, 129, 58, 0.15);
+    transform: translateY(-1px);
 }
 
 .step-number {
@@ -286,11 +334,18 @@ get_header(); ?>
     font-weight: 600;
     color: var(--charcoal);
     font-size: 16px;
+    transition: all 0.3s ease;
 }
 
 .step.active .step-number {
     background: linear-gradient(135deg, var(--gold-start), var(--gold-end));
     color: var(--white);
+}
+
+.step.completed .step-number {
+    background: #22c55e;
+    color: var(--white);
+    font-size: 14px;
 }
 
 .step-title {
@@ -304,15 +359,89 @@ get_header(); ?>
     height: 2px;
     background: var(--warm-beige);
     margin: 0 20px;
+    transition: background 0.3s ease;
+}
+
+.step-line.completed {
+    background: #22c55e;
 }
 
 .checkout-header h1 {
     color: var(--charcoal);
     font-size: 2.5rem;
     font-weight: 700;
+    margin-bottom: 15px;
 }
 
-/* Main Layout */
+.step-description {
+    color: #666;
+    font-size: 1.1rem;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Progress Indicator */
+.checkout-progress {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-bottom: 40px;
+    padding: 20px;
+    background: var(--white);
+    border-radius: 15px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.progress-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 20px;
+    border-radius: 25px;
+    background: var(--paper-bg);
+    transition: all 0.3s ease;
+}
+
+.progress-item.active {
+    background: rgba(182, 129, 58, 0.1);
+    border: 2px solid var(--gold-start);
+}
+
+.progress-item.completed {
+    background: rgba(34, 197, 94, 0.1);
+    border: 2px solid #22c55e;
+}
+
+.progress-icon {
+    width: 24px;
+    height: 24px;
+    background: var(--warm-beige);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--charcoal);
+}
+
+.progress-item.active .progress-icon {
+    background: var(--gold-start);
+    color: var(--white);
+}
+
+.progress-item.completed .progress-icon {
+    background: #22c55e;
+    color: var(--white);
+}
+
+.progress-text {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--charcoal);
+}
+
+/* Layout */
 .checkout-wrapper {
     width: 100%;
 }
@@ -340,7 +469,7 @@ get_header(); ?>
 .section-title {
     display: flex;
     align-items: center;
-    gap: 12px;
+    justify-content: space-between;
     margin-bottom: 25px;
     color: var(--charcoal);
     font-size: 1.3rem;
@@ -349,9 +478,31 @@ get_header(); ?>
 
 .section-title .icon {
     font-size: 1.5rem;
+    margin-right: 12px;
 }
 
-/* Form Styling */
+.edit-cart-btn {
+    background: none;
+    border: 2px solid var(--warm-beige);
+    color: var(--charcoal);
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 13px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.edit-cart-btn:hover {
+    border-color: var(--gold-start);
+    color: var(--gold-start);
+    transform: translateY(-1px);
+}
+
+/* Form Styling (same as existing) */
 .form-row {
     margin-bottom: 20px;
 }
@@ -391,12 +542,6 @@ get_header(); ?>
     border-color: var(--gold-start);
     background: var(--white);
     box-shadow: 0 0 0 3px rgba(182, 129, 58, 0.1);
-}
-
-.form-row-description {
-    font-size: 13px;
-    color: #666;
-    margin-top: 5px;
 }
 
 /* Checkbox Styling */
@@ -497,36 +642,6 @@ get_header(); ?>
     transform: translateY(-1px);
 }
 
-.woocommerce-form-coupon-toggle {
-    margin-bottom: 20px;
-}
-
-.woocommerce-form-coupon-toggle .showcoupon {
-    color: var(--gold-start);
-    text-decoration: underline;
-    font-weight: 600;
-    cursor: pointer;
-    transition: color 0.3s ease;
-}
-
-.woocommerce-form-coupon-toggle .showcoupon:hover {
-    color: var(--gold-end);
-}
-
-.checkout_coupon {
-    margin-top: 20px;
-    padding: 20px;
-    background: rgba(255,255,255,0.8);
-    border-radius: 10px;
-    animation: slideDown 0.3s ease-out;
-}
-
-.checkout_coupon p {
-    margin-bottom: 15px;
-    font-style: italic;
-    color: #4caf50;
-}
-
 /* Personalization Section */
 .personalization-section {
     background: linear-gradient(135deg, #fff5e6 0%, #fff 100%);
@@ -579,7 +694,28 @@ get_header(); ?>
 
 .sticky-summary {
     position: sticky;
-    top: 80px;
+    top: 100px;
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid var(--warm-beige);
+}
+
+.section-header h3 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--charcoal);
+    margin: 0;
+}
+
+.section-icon {
+    font-size: 1.3rem;
 }
 
 /* Order Review Table */
@@ -606,12 +742,6 @@ get_header(); ?>
     font-weight: 600;
 }
 
-.woocommerce-checkout-review-order-table .cart-subtotal th,
-.woocommerce-checkout-review-order-table .shipping th,
-.woocommerce-checkout-review-order-table .order-total th {
-    font-weight: 600;
-}
-
 .woocommerce-checkout-review-order-table .order-total {
     border-bottom: none;
     border-top: 2px solid var(--gold-start);
@@ -626,12 +756,6 @@ get_header(); ?>
 }
 
 .woocommerce-checkout-review-order-table .order-total .woocommerce-Price-amount {
-    color: var(--gold-start);
-}
-
-/* Personalization fee in order review */
-.fee.personalization-fee th,
-.fee.personalization-fee td {
     color: var(--gold-start);
 }
 
@@ -678,24 +802,6 @@ get_header(); ?>
     border-color: var(--gold-start);
 }
 
-.payment_method.disabled {
-    opacity: 0.5;
-    pointer-events: none;
-}
-
-.payment_method.disabled label {
-    cursor: not-allowed;
-}
-
-.payment_box {
-    padding: 15px 20px;
-    margin: 10px 0;
-    background: #f9f9f9;
-    border-radius: 8px;
-    font-size: 14px;
-    color: #666;
-}
-
 /* Place Order Button */
 #place_order {
     width: 100%;
@@ -711,6 +817,8 @@ get_header(); ?>
     margin-top: 20px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    position: relative;
+    overflow: hidden;
 }
 
 #place_order:hover {
@@ -719,20 +827,19 @@ get_header(); ?>
     box-shadow: 0 10px 30px rgba(182, 129, 58, 0.4);
 }
 
-/* Privacy Policy Text */
-.woocommerce-privacy-policy-text {
-    font-size: 13px;
-    color: #666;
-    line-height: 1.6;
-    margin-top: 20px;
-    padding: 15px;
-    background: #f5f5f5;
-    border-radius: 8px;
+#place_order::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.6s ease;
 }
 
-.woocommerce-privacy-policy-text a {
-    color: var(--gold-start);
-    text-decoration: underline;
+#place_order:hover::before {
+    left: 100%;
 }
 
 /* Checkout Benefits */
@@ -755,10 +862,10 @@ get_header(); ?>
 
 .benefit-item .dashicons {
     color: var(--gold-start);
-    font-size: 20px;
+    font-size: 18px;
 }
 
-/* Empty Cart */
+/* Empty States */
 .empty-checkout {
     text-align: center;
     padding: 100px 20px;
@@ -770,6 +877,7 @@ get_header(); ?>
 .empty-icon {
     font-size: 5rem;
     margin-bottom: 20px;
+    opacity: 0.3;
 }
 
 .empty-checkout h2 {
@@ -783,12 +891,20 @@ get_header(); ?>
     margin-bottom: 30px;
 }
 
-/* Shipping Fields */
-.shipping-fields {
+/* Privacy Policy Text */
+.woocommerce-privacy-policy-text {
+    font-size: 13px;
+    color: #666;
+    line-height: 1.6;
     margin-top: 20px;
-    padding: 20px;
+    padding: 15px;
     background: #f5f5f5;
-    border-radius: 10px;
+    border-radius: 8px;
+}
+
+.woocommerce-privacy-policy-text a {
+    color: var(--gold-start);
+    text-decoration: underline;
 }
 
 /* Responsive Design */
@@ -808,7 +924,7 @@ get_header(); ?>
 }
 
 @media (max-width: 768px) {
-    .checkout-container {
+    .checkout-flow-container {
         padding: 80px 0 40px;
     }
     
@@ -837,11 +953,40 @@ get_header(); ?>
     
     .section-title {
         font-size: 1.1rem;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .edit-cart-btn {
+        align-self: flex-end;
     }
     
     .checkbox-label {
         padding: 12px 15px;
         font-size: 14px;
+    }
+    
+    .progress-item {
+        padding: 8px 15px;
+    }
+    
+    .progress-text {
+        display: none;
+    }
+}
+
+/* Animations */
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        max-height: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        max-height: 300px;
+        transform: translateY(0);
     }
 }
 
@@ -880,61 +1025,22 @@ get_header(); ?>
     color: var(--charcoal);
     font-size: 16px;
 }
-
-/* Animations */
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        max-height: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        max-height: 300px;
-        transform: translateY(0);
-    }
-}
-
-/* Error States */
-.woocommerce-invalid input {
-    border-color: #e74c3c !important;
-    background: #fff5f5 !important;
-}
-
-.woocommerce-invalid-required-field::after {
-    content: 'Това поле е задължително';
-    display: block;
-    color: #e74c3c;
-    font-size: 13px;
-    margin-top: 5px;
-}
 </style>
 
 <script>
 jQuery(document).ready(function($) {
+    // Step navigation - allow clicking on previous steps
+    $('.step.clickable').on('click', function() {
+        const url = $(this).data('url');
+        if (url) {
+            window.location.href = url;
+        }
+    });
+    
     // Coupon toggle functionality
     $('.woocommerce-form-coupon-toggle .showcoupon').on('click', function(e) {
         e.preventDefault();
         $('.checkout_coupon').slideToggle(300);
-    });
-    
-    // Handle coupon form submission
-    $(document).on('click', '.checkout_coupon .button[name="apply_coupon"]', function(e) {
-        e.preventDefault();
-        
-        const $button = $(this);
-        const $form = $button.closest('form');
-        const couponCode = $form.find('input[name="coupon_code"]').val();
-        
-        if (!couponCode) {
-            alert('Моля, въведете код за отстъпка');
-            return;
-        }
-        
-        $button.prop('disabled', true).text('Прилага...');
-        
-        // Let WooCommerce handle the coupon application
-        $form.submit();
     });
     
     // Ship to different address toggle
@@ -989,7 +1095,6 @@ jQuery(document).ready(function($) {
             },
             success: function(response) {
                 if (response.success) {
-                    // Trigger checkout refresh
                     $(document.body).trigger('update_checkout');
                 }
             }
@@ -1007,7 +1112,6 @@ jQuery(document).ready(function($) {
             },
             success: function(response) {
                 if (response.success) {
-                    // Trigger checkout refresh
                     $(document.body).trigger('update_checkout');
                 }
             }
@@ -1034,16 +1138,15 @@ jQuery(document).ready(function($) {
         return true;
     });
     
-    // Smooth scroll to sections on click
+    // Smooth scroll to sections on title click
     $('.section-title').on('click', function() {
         const section = $(this).closest('.checkout-section');
-        $('html, body').animate({
-            scrollTop: section.offset().top - 100
-        }, 500);
+        if (section.length) {
+            $('html, body').animate({
+                scrollTop: section.offset().top - 100
+            }, 500);
+        }
     });
-    
-    // Add visual feedback for required fields
-    $('abbr.required').parent('label').css('font-weight', '600');
     
     // Auto-format phone number
     $('input[type="tel"]').on('input', function() {
@@ -1052,6 +1155,15 @@ jQuery(document).ready(function($) {
             value = '+359' + value;
         }
         $(this).val(value);
+    });
+    
+    // Add visual feedback for form completion
+    $('input, select, textarea').on('blur', function() {
+        if ($(this).val()) {
+            $(this).addClass('completed');
+        } else {
+            $(this).removeClass('completed');
+        }
     });
 });
 </script>
