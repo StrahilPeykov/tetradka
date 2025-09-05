@@ -128,7 +128,12 @@ class Tetradkata_AJAX_Cart {
             if ($cart_item_key) {
                 WC()->cart->calculate_totals();
                 $cart_count = absint(WC()->cart->get_cart_contents_count());
-                $cart_total = $this->format_price(WC()->cart->get_total('raw'));
+                // Products total only (exclude shipping/fees), incl. tax
+                $products_total = 0;
+                foreach (WC()->cart->get_cart() as $ci) {
+                    $products_total += (float) $ci['line_total'] + (float) $ci['line_tax'];
+                }
+                $cart_total = $this->format_price($products_total);
                 
                 wp_send_json_success(array(
                     'message' => __('Продуктът е добавен в количката успешно', 'tetradkata'),
@@ -240,7 +245,12 @@ class Tetradkata_AJAX_Cart {
             
             WC()->cart->calculate_totals();
             
-            $cart_total = $this->format_price(WC()->cart->get_total('raw'));
+            // Products total only (exclude shipping/fees), incl. tax
+            $products_total = 0;
+            foreach (WC()->cart->get_cart() as $ci) {
+                $products_total += (float) $ci['line_total'] + (float) $ci['line_tax'];
+            }
+            $cart_total = $this->format_price($products_total);
             
             wp_send_json_success(array(
                 'cart_html' => $cart_html,
@@ -284,7 +294,12 @@ class Tetradkata_AJAX_Cart {
             if ($removed) {
                 WC()->cart->calculate_totals();
                 
-                $cart_total = $this->format_price(WC()->cart->get_total('raw'));
+                // Products total only (exclude shipping/fees), incl. tax
+                $products_total = 0;
+                foreach (WC()->cart->get_cart() as $ci) {
+                    $products_total += (float) $ci['line_total'] + (float) $ci['line_tax'];
+                }
+                $cart_total = $this->format_price($products_total);
                 
                 wp_send_json_success(array(
                     'message' => __('Продуктът е премахнат от количката', 'tetradkata'),
@@ -370,7 +385,12 @@ class Tetradkata_AJAX_Cart {
      */
     public function add_to_cart_fragments($fragments) {
         $cart_count = absint(WC()->cart->get_cart_contents_count());
-        $cart_total = $this->format_price(WC()->cart->get_cart_contents_total() + WC()->cart->get_cart_tax());
+        // Products total only (exclude shipping/fees), incl. tax
+        $products_total = 0;
+        foreach (WC()->cart->get_cart() as $ci) {
+            $products_total += (float) $ci['line_total'] + (float) $ci['line_tax'];
+        }
+        $cart_total = $this->format_price($products_total);
         
         $fragments['.cart-count'] = '<span class="cart-count">' . esc_html($cart_count) . '</span>';
         $fragments['#cart-total-amount'] = '<span id="cart-total-amount">' . esc_html($cart_total) . '</span>';

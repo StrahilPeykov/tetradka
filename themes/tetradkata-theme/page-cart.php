@@ -252,9 +252,16 @@ get_header(); ?>
                                             <?php endif; ?>
                                         <?php endif; ?>
 
+                                        <?php 
+                                        // Calculate products total only (exclude shipping/fees), incl. tax
+                                        $products_total = 0;
+                                        foreach (WC()->cart->get_cart() as $ci) {
+                                            $products_total += (float) $ci['line_total'] + (float) $ci['line_tax'];
+                                        }
+                                        ?>
                                         <div class="order-total">
                                             <span class="label"><?php esc_html_e('Общо:', 'tetradkata'); ?></span>
-                                            <span class="amount"><?php wc_cart_totals_order_total_html(); ?></span>
+                                            <span class="amount"><?php echo wc_price($products_total); ?></span>
                                         </div>
                                     </div>
 

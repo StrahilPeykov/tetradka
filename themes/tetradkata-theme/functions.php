@@ -119,6 +119,29 @@ add_action('init', 'tetradkata_load_translations');
  * Add custom checkout fields for Bulgarian addresses
  */
 function tetradkata_add_checkout_fields($fields) {
+    // Force/hide country: Bulgaria only
+    $fields['billing']['billing_country'] = array_merge(
+        $fields['billing']['billing_country'] ?? array(),
+        array(
+            'type'     => 'hidden',
+            'label'    => false,
+            'required' => true,
+            'default'  => 'BG',
+            'priority' => 1,
+        )
+    );
+
+    $fields['shipping']['shipping_country'] = array_merge(
+        $fields['shipping']['shipping_country'] ?? array(),
+        array(
+            'type'     => 'hidden',
+            'label'    => false,
+            'required' => true,
+            'default'  => 'BG',
+            'priority' => 1,
+        )
+    );
+
     // Add Bulgarian-specific fields if needed
     $fields['billing']['billing_company_vat'] = array(
         'label'    => __('ЕИК/БУЛСТАТ (за фактура)', 'tetradkata'),
@@ -141,6 +164,16 @@ function tetradkata_change_default_checkout_country() {
 }
 add_filter('default_checkout_billing_country', 'tetradkata_change_default_checkout_country');
 add_filter('default_checkout_shipping_country', 'tetradkata_change_default_checkout_country');
+
+/**
+ * Enforce BG on posted checkout data (server-side guarantee)
+ */
+function tetradkata_force_bg_country_on_checkout($data) {
+    $data['billing_country']  = 'BG';
+    $data['shipping_country'] = 'BG';
+    return $data;
+}
+add_filter('woocommerce_checkout_posted_data', 'tetradkata_force_bg_country_on_checkout');
 
 /**
  * Personalization Functions - Moved to separate file for better organization
