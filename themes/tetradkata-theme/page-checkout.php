@@ -10,6 +10,7 @@ get_header(); ?>
 <div class="checkout-flow-container">
     <div class="container">
         <!-- Unified Step Header -->
+        <?php $is_thankyou = function_exists('is_order_received_page') && is_order_received_page(); ?>
         <div class="checkout-header">
             <div class="checkout-steps">
                 <div class="step completed clickable" data-step="1" data-url="<?php echo esc_url(wc_get_cart_url()); ?>">
@@ -17,26 +18,37 @@ get_header(); ?>
                     <span class="step-title">Количка</span>
                 </div>
                 <div class="step-line completed"></div>
-                <div class="step active" data-step="2">
+                <div class="step <?php echo $is_thankyou ? '' : 'active'; ?>" data-step="2">
                     <span class="step-number">2</span>
                     <span class="step-title">Плащане</span>
                 </div>
-                <div class="step-line"></div>
-                <div class="step" data-step="3">
+                <div class="step-line <?php echo $is_thankyou ? 'completed' : ''; ?>"></div>
+                <div class="step <?php echo $is_thankyou ? 'active' : ''; ?>" data-step="3">
                     <span class="step-number">3</span>
                     <span class="step-title">Завършено</span>
                 </div>
             </div>
-            <h1>Завършване на поръчката</h1>
-            <p class="step-description">Въведете данните си за доставка и изберете начин на плащане</p>
+            <h1><?php echo $is_thankyou ? 'Благодарим за поръчката!' : 'Завършване на поръчката'; ?></h1>
+            <p class="step-description">
+                <?php echo $is_thankyou 
+                    ? 'Поръчката е приета и се обработва. Детайли по-долу.' 
+                    : 'Въведете данните си за доставка и изберете начин на плащане'; ?>
+            </p>
         </div>
 
         <div class="checkout-content">
             <?php
             // Check if WooCommerce is active
             if (class_exists('WooCommerce')) {
-                // Check if cart is not empty
-                if (WC()->cart && !WC()->cart->is_empty()) {
+                // Thank you / order received endpoint
+                if ($is_thankyou) {
+                    // Render WooCommerce Thank You template
+                    $order_id = absint(get_query_var('order-received'));
+                    $order    = $order_id ? wc_get_order($order_id) : false;
+                    wc_print_notices();
+                    wc_get_template('checkout/thankyou.php', array('order' => $order));
+                // Checkout form when cart has items
+                } elseif (WC()->cart && !WC()->cart->is_empty()) {
                     ?>
                     <div class="checkout-wrapper">
                         <?php
