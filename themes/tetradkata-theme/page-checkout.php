@@ -52,18 +52,6 @@ get_header(); ?>
                             <div class="checkout-layout">
                                 <div class="checkout-main">
                                     
-                                    <!-- Progress Indicator -->
-                                    <div class="checkout-progress">
-                                        <div class="progress-item completed">
-                                            <span class="progress-icon">✓</span>
-                                            <span class="progress-text">Количка прегледана</span>
-                                        </div>
-                                        <div class="progress-item active">
-                                            <span class="progress-icon">2</span>
-                                            <span class="progress-text">Въвеждане на данни</span>
-                                        </div>
-                                    </div>
-                                    
                                     <!-- Coupon Code Section -->
                                     <?php if (wc_coupons_enabled()) : ?>
                                         <div class="checkout-section coupon-section">
@@ -378,67 +366,6 @@ get_header(); ?>
     font-size: 1.1rem;
     max-width: 600px;
     margin: 0 auto;
-}
-
-/* Progress Indicator */
-.checkout-progress {
-    display: flex;
-    justify-content: center;
-    gap: 30px;
-    margin-bottom: 40px;
-    padding: 20px;
-    background: var(--white);
-    border-radius: 15px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-}
-
-.progress-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px 20px;
-    border-radius: 25px;
-    background: var(--paper-bg);
-    transition: all 0.3s ease;
-}
-
-.progress-item.active {
-    background: rgba(182, 129, 58, 0.1);
-    border: 2px solid var(--gold-start);
-}
-
-.progress-item.completed {
-    background: rgba(34, 197, 94, 0.1);
-    border: 2px solid #22c55e;
-}
-
-.progress-icon {
-    width: 24px;
-    height: 24px;
-    background: var(--warm-beige);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--charcoal);
-}
-
-.progress-item.active .progress-icon {
-    background: var(--gold-start);
-    color: var(--white);
-}
-
-.progress-item.completed .progress-icon {
-    background: #22c55e;
-    color: var(--white);
-}
-
-.progress-text {
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--charcoal);
 }
 
 /* Layout */
@@ -965,14 +892,6 @@ get_header(); ?>
     .checkbox-label {
         padding: 12px 15px;
         font-size: 14px;
-    }
-    
-    .progress-item {
-        padding: 8px 15px;
-    }
-    
-    .progress-text {
-        display: none;
     }
 }
 
