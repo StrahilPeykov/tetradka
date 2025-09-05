@@ -335,6 +335,8 @@ function tetradkata_remove_checkout_notices() {
     
     // Remove returning customer notice
     remove_action('woocommerce_before_checkout_form', 'woocommerce_checkout_login_form', 10);
+    // Remove coupon prompt to keep checkout compact
+    remove_action('woocommerce_before_checkout_form', 'woocommerce_checkout_coupon_form', 10);
 }
 add_action('init', 'tetradkata_remove_checkout_notices');
 

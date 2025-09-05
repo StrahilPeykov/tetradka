@@ -1,0 +1,172 @@
+/* Checkout Page Styles */
+
+.checkout-flow-container {
+  background: var(--paper-bg);
+  padding: 120px 0 60px;
+  min-height: calc(100vh - 200px);
+}
+
+.checkout-header {
+  text-align: center;
+  margin-bottom: 40px;
+  padding: 30px 0;
+  background: var(--white);
+  border-radius: 20px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+}
+
+.checkout-steps {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.checkout-steps .step {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--charcoal);
+  text-decoration: none;
+}
+
+.checkout-steps .step .step-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--warm-beige);
+  color: var(--charcoal);
+  font-weight: 700;
+}
+
+.checkout-steps .step.active .step-number {
+  background: var(--gold-start);
+  color: var(--white);
+}
+
+.checkout-steps .step-line {
+  width: 40px;
+  height: 2px;
+  background: var(--warm-beige);
+  border-radius: 2px;
+}
+
+.checkout-header h1 {
+  color: var(--charcoal);
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.step-description {
+  color: #666;
+  font-size: 1rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.checkout-wrapper {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 40px;
+}
+
+.checkout-main {
+  background: var(--white);
+  border-radius: 20px;
+  padding: 16px 16px 24px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.checkout-sidebar .order-summary {
+  background: var(--white);
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  position: sticky;
+  top: 20px;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 8px;
+  margin-bottom: 12px;
+  border-bottom: 2px solid var(--warm-beige);
+}
+
+.section-header h3 {
+  margin: 0;
+  color: var(--charcoal);
+}
+
+.section-icon { font-size: 1.2rem; }
+
+.checkout-benefits {
+  display: grid;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.checkout-benefits .benefit-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--charcoal);
+}
+
+.empty-checkout, .woocommerce-inactive {
+  background: var(--white);
+  border-radius: 20px;
+  padding: 40px;
+  text-align: center;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+
+.empty-checkout .empty-icon {
+  font-size: 48px;
+  margin-bottom: 10px;
+}
+
+@media (max-width: 992px) {
+  .checkout-wrapper { grid-template-columns: 1fr; }
+  .checkout-sidebar .order-summary { position: static; }
+}
+
+/* Compact WooCommerce checkout form */
+.woocommerce form.checkout .form-row { margin: 8px 0; }
+.woocommerce .form-row label { font-weight: 600; font-size: 0.95rem; }
+.woocommerce input.input-text, .woocommerce select, .woocommerce textarea {
+  border: 1px solid var(--warm-beige);
+  border-radius: 10px;
+  padding: 10px 12px;
+  width: 100%;
+}
+.woocommerce .col2-set { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.woocommerce .col2-set .col-1, .woocommerce .col2-set .col-2 { margin: 0; }
+.woocommerce .woocommerce-billing-fields, .woocommerce .woocommerce-shipping-fields { padding: 8px; background: var(--paper-bg); border-radius: 12px; }
+.woocommerce h3 { font-size: 1.1rem; margin: 6px 0 10px; }
+
+/* Shipping methods compact */
+ul#shipping_method, .woocommerce ul#shipping_method { margin: 8px 0; }
+ul#shipping_method li { padding: 6px 8px; background: #faf8f5; border-radius: 10px; margin-bottom: 6px; }
+.woo-bg-additional-fields { margin-top: 8px; }
+
+/* Payment methods compact */
+.woocommerce-checkout #payment { background: var(--paper-bg); border-radius: 12px; padding: 10px; }
+.woocommerce-checkout #payment ul.wc_payment_methods { padding: 0; }
+.woocommerce-checkout #payment ul.wc_payment_methods li { padding: 6px 8px; }
+.woocommerce-checkout #payment .place-order { margin-top: 10px; }
+
+/* Notices */
+.woocommerce-NoticeGroup-checkout, .woocommerce-error, .woocommerce-info, .woocommerce-message { margin: 10px 0; }
+
+/* Order notes toggle */
+.checkout-notes-toggle { display: inline-block; margin: 10px 0; font-weight: 600; }
+.checkout-notes-toggle.open { color: var(--gold-start); }
+

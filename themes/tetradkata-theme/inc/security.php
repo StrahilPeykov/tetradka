@@ -210,7 +210,8 @@ function tetradkata_security_headers() {
         header('X-Content-Type-Options: nosniff');
         header('X-XSS-Protection: 1; mode=block');
         header('Referrer-Policy: strict-origin-when-cross-origin');
-        header('Permissions-Policy: camera=(), microphone=(), geolocation=()');
+        // Allow geolocation for trusted shipping widgets (Econt/Speedy) used in checkout popups
+        header("Permissions-Policy: camera=(), microphone=(), geolocation=(self 'https://officelocator.econt.com' 'https://services.speedy.bg')");
         
         // Content Security Policy (adjust as needed)
         $csp = "default-src 'self'; ";
@@ -219,7 +220,8 @@ function tetradkata_security_headers() {
         $csp .= "img-src 'self' data: *.googleapis.com *.gstatic.com *.google-analytics.com *.facebook.com *.googleusercontent.com; ";
         $csp .= "font-src 'self' data: *.googleapis.com *.gstatic.com cdn.jsdelivr.net; ";
         $csp .= "connect-src 'self' *.google-analytics.com *.googletagmanager.com *.facebook.com; ";
-        $csp .= "frame-src 'self' *.youtube.com *.vimeo.com *.facebook.com; ";
+        // Allow shipping office locator widgets to be embedded in an iframe
+        $csp .= "frame-src 'self' *.youtube.com *.vimeo.com *.facebook.com officelocator.econt.com services.speedy.bg; ";
         
         header('Content-Security-Policy: ' . $csp);
     }
