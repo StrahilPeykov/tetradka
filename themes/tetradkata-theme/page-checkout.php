@@ -21,7 +21,7 @@ get_header(); ?>
         <!-- Unified Step Header -->
         <div class="checkout-header">
             <div class="checkout-steps">
-                <a class="step" data-step="1" href="<?php echo esc_url( function_exists('wc_get_cart_url') ? wc_get_cart_url() : home_url('/cart') ); ?>">
+                <a class="step completed" data-step="1" href="<?php echo esc_url( function_exists('wc_get_cart_url') ? wc_get_cart_url() : home_url('/cart') ); ?>">
                     <span class="step-number">1</span>
                     <span class="step-title">Количка</span>
                 </a>
