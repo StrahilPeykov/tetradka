@@ -42,11 +42,83 @@ get_header(); ?>
             if (class_exists('WooCommerce')) {
                 // Thank you / order received endpoint
                 if ($is_thankyou) {
-                    // Render WooCommerce Thank You template
+                    // Universal Thank You section with graceful order lookup
+                    $order = false;
                     $order_id = absint(get_query_var('order-received'));
-                    $order    = $order_id ? wc_get_order($order_id) : false;
+                    if ($order_id) {
+                        $order = wc_get_order($order_id);
+                    }
+                    if (!$order && isset($_GET['key'])) {
+                        $order_key = wc_clean(wp_unslash($_GET['key']));
+                        $order_id_by_key = wc_get_order_id_by_order_key($order_key);
+                        if ($order_id_by_key) {
+                            $order = wc_get_order($order_id_by_key);
+                        }
+                    }
+                    if (!$order && is_user_logged_in()) {
+                        // Fallback: last customer order if available
+                        $last = wc_get_customer_last_order(get_current_user_id(), 'any');
+                        if ($last instanceof WC_Order) {
+                            $order = $last;
+                        }
+                    }
+
                     wc_print_notices();
-                    wc_get_template('checkout/thankyou.php', array('order' => $order));
+                    ?>
+                    <div class="thankyou-wrapper">
+                        <div class="thankyou-card">
+                            <div class="thankyou-icon">✅</div>
+                            <h2>Благодарим за поръчката!</h2>
+                            <p class="thankyou-sub">
+                                Ще получите имейл с потвърждение и детайли за поръчката.
+                            </p>
+
+                            <?php if ($order instanceof WC_Order) : ?>
+                                <div class="thankyou-details">
+                                    <div class="detail"><strong>Номер на поръчка:</strong> <?php echo esc_html($order->get_order_number()); ?></div>
+                                    <?php if ($order->get_date_created()) : ?>
+                                        <div class="detail"><strong>Дата:</strong> <?php echo esc_html(wc_format_datetime($order->get_date_created())); ?></div>
+                                    <?php endif; ?>
+                                    <?php if ($order->get_billing_email()) : ?>
+                                        <div class="detail"><strong>Имейл:</strong> <?php echo esc_html($order->get_billing_email()); ?></div>
+                                    <?php endif; ?>
+                                    <div class="detail"><strong>Обща сума:</strong> <?php echo wp_kses_post($order->get_formatted_order_total()); ?></div>
+                                    <?php if ($order->get_payment_method_title()) : ?>
+                                        <div class="detail"><strong>Метод на плащане:</strong> <?php echo esc_html($order->get_payment_method_title()); ?></div>
+                                    <?php endif; ?>
+                                </div>
+
+                                <h3 class="items-title">Артикули</h3>
+                                <ul class="thankyou-items">
+                                    <?php foreach ($order->get_items() as $item_id => $item) : ?>
+                                        <li class="thankyou-item">
+                                            <span class="item-name"><?php echo esc_html($item->get_name()); ?></span>
+                                            <span class="item-qty">× <?php echo esc_html($item->get_quantity()); ?></span>
+                                            <span class="item-total"><?php echo wp_kses_post($order->get_formatted_line_subtotal($item)); ?></span>
+                                        </li>
+                                    <?php endforeach; ?>
+                                </ul>
+
+                                <div class="thankyou-actions">
+                                    <a class="btn btn-primary" href="<?php echo esc_url(wc_get_page_permalink('shop')); ?>">Към магазина</a>
+                                    <?php if (is_user_logged_in()) : ?>
+                                        <a class="btn btn-secondary" href="<?php echo esc_url(wc_get_account_endpoint_url('orders')); ?>">Моите поръчки</a>
+                                    <?php endif; ?>
+                                </div>
+                            <?php else : ?>
+                                <div class="thankyou-generic">
+                                    <p>Ако не виждате детайли тук, проверете имейла си за потвърждение. При въпроси се свържете с нас и посочете имейла, с който направихте поръчката.</p>
+                                    <div class="thankyou-actions">
+                                        <a class="btn btn-primary" href="<?php echo esc_url(wc_get_page_permalink('shop')); ?>">Обратно в магазина</a>
+                                        <?php if (is_user_logged_in()) : ?>
+                                            <a class="btn btn-secondary" href="<?php echo esc_url(wc_get_account_endpoint_url('orders')); ?>">Моите поръчки</a>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                    <?php
                 // Checkout form when cart has items
                 } elseif (WC()->cart && !WC()->cart->is_empty()) {
                     ?>
