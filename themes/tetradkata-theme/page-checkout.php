@@ -10,7 +10,10 @@ get_header(); ?>
 <div class="checkout-flow-container">
     <div class="container">
         <!-- Unified Step Header -->
-        <?php $is_thankyou = function_exists('is_order_received_page') && is_order_received_page(); ?>
+        <?php 
+            $is_thankyou = function_exists('is_order_received_page') && is_order_received_page();
+            $is_order_pay = function_exists('is_checkout_pay_page') && is_checkout_pay_page();
+        ?>
         <div class="checkout-header">
             <div class="checkout-steps">
                 <div class="step completed clickable" data-step="1" data-url="<?php echo esc_url(wc_get_cart_url()); ?>">
@@ -32,7 +35,7 @@ get_header(); ?>
             <p class="step-description">
                 <?php echo $is_thankyou 
                     ? 'Поръчката е приета и се обработва. Детайли по-долу.' 
-                    : 'Въведете данните си за доставка и изберете начин на плащане'; ?>
+                    : ( $is_order_pay ? 'Пренасочване към сигурна страница за плащане…' : 'Въведете данните си за доставка и изберете начин на плащане' ); ?>
             </p>
         </div>
 
@@ -119,6 +122,21 @@ get_header(); ?>
                         </div>
                     </div>
                     <?php
+                // Order payment endpoint (e.g. myPOS redirect target)
+                } elseif ($is_order_pay) {
+                    wc_print_notices();
+                    // Attempt immediate gateway receipt rendering for redirect-based payments (e.g., myPOS)
+                    $pay_order_id = absint(get_query_var('order-pay'));
+                    $pay_order    = $pay_order_id ? wc_get_order($pay_order_id) : false;
+
+                    if ($pay_order instanceof WC_Order) {
+                        // Let the selected gateway render its receipt/redirect form
+                        do_action('woocommerce_receipt_' . $pay_order->get_payment_method(), $pay_order->get_id());
+                    } else {
+                        // Fallback to WooCommerce pay form
+                        echo do_shortcode('[woocommerce_checkout]');
+                    }
+
                 // Checkout form when cart has items
                 } elseif (WC()->cart && !WC()->cart->is_empty()) {
                     ?>
@@ -129,6 +147,15 @@ get_header(); ?>
                         
                         // Checkout form
                         $checkout = WC()->checkout();
+
+                        // Allow plugins/gateways to hook before the checkout form (e.g. login prompt, extra fields)
+                        do_action('woocommerce_before_checkout_form', $checkout);
+
+                        // If registration is required and not enabled, ensure users are logged in.
+                        if (!$checkout->is_registration_enabled() && $checkout->is_registration_required() && !is_user_logged_in()) {
+                            echo '<p class="woocommerce-error">' . esc_html__('Трябва да влезете в профила си, за да продължите с поръчката.', 'woocommerce') . '</p>';
+                            // Stop rendering the checkout form
+                        } else {
                         ?>
                         
                         <form name="checkout" method="post" class="checkout woocommerce-checkout" action="<?php echo esc_url(wc_get_checkout_url()); ?>" enctype="multipart/form-data">
@@ -298,6 +325,12 @@ get_header(); ?>
                             </div>
 
                         </form>
+
+                        <?php 
+                        // Allow plugins/gateways to hook after the checkout form
+                        do_action('woocommerce_after_checkout_form', $checkout);
+                        }
+                        ?>
                         
                     </div>
                     <?php

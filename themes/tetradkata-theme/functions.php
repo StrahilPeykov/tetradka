@@ -381,6 +381,7 @@ function tetradkata_payment_gateway_titles($title, $gateway_id) {
         'cod' => __('Наложен платеж', 'tetradkata'),
         'bacs' => __('Банков превод', 'tetradkata'),
         'viva' => __('Плащане с кредитна карта (Viva.com)', 'tetradkata'),
+        'mypos_virtual' => __('Плащане с карта (myPOS)', 'tetradkata'),
     );
     
     return isset($titles[$gateway_id]) ? $titles[$gateway_id] : $title;
